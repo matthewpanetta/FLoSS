@@ -27,6 +27,7 @@ public class WriteFileHandler {
 		chooser.setFileFilter(filter);
 		
 		// Allow the user to upload multiple files.
+		// test
 		chooser.setMultiSelectionEnabled(true);
 		
 		int returnVal = chooser.showOpenDialog(null);
