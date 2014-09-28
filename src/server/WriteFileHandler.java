@@ -18,35 +18,27 @@ public class WriteFileHandler {
 	String result = "";
 	
 	public void writeFile() throws IOException {
-		File[] files = getFiles();
-		
-		String fileName = "";
-		
+		File[] files = getFiles();		
+		String fileName = "";	
 		HttpURLConnection httpUrlConnection;
-
-		FileInputStream fis;
-		BufferedInputStream bis;
-		
-		long byteLength;
 		
 		for (File f : files) {
-			fileName = f.getName();		// Get the file's name
-			fileName.trim();			// Eliminate whitespace before and after string
-			fileName = fileName.replaceAll("\\s", "");	// Eliminate spaces in file name
+			fileName = getFileName(f);	
 			
 			httpUrlConnection = setupConnection(fileName);
 			
-			fis = new FileInputStream(f);
-			bis = new BufferedInputStream(fis);
-			
-			byteLength = f.length();	// Get the length of the file.
-			
-			writeToOutput(httpUrlConnection, bis, byteLength);
+			writeToOutput(httpUrlConnection, f);
 			
 			readStream(httpUrlConnection);
-
-			fis.close();
 		}
+	}
+	
+	public String getFileName(File f) {
+		String fileName = f.getName();				// Get the file's name
+		fileName = fileName.trim();					// Eliminate whitespace before and after string
+		fileName = fileName.replaceAll("\\s", "");	// Eliminate spaces in file name
+		
+		return fileName;
 	}
 	
 	public HttpURLConnection setupConnection(String fileName) throws MalformedURLException, IOException {
@@ -78,14 +70,20 @@ public class WriteFileHandler {
 		return null;
 	}
 	
-	public void writeToOutput(HttpURLConnection httpUrlConnection, BufferedInputStream bis, long byteLength) throws IOException {
+	public void writeToOutput(HttpURLConnection httpUrlConnection, File f) throws IOException {
 		OutputStream os = httpUrlConnection.getOutputStream();
+		FileInputStream fis = new FileInputStream(f);
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		
+		long byteLength = f.length();				// Get the length of the file.
 		
 		for (int i = 0; i < byteLength; i++) {
-			os.write(bis.read());	// For each byte that input stream reads, write to output stream. This ensures the entire file is uploaded to the file.
+			os.write(bis.read());					// For each byte that input stream reads, write to output stream. This ensures the entire file is uploaded to the file.
 		}
 		
 		os.close();
+		bis.close();
+		fis.close();
 	}
 	
 	public void readStream(HttpURLConnection httpUrlConnection) throws IOException {
