@@ -16,7 +16,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class WriteFileHandler {
 	String result = "";
-	// Test
 	
 	public void writeFile() throws IOException {
 		File[] files = getFiles();
