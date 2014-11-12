@@ -97,4 +97,13 @@ public class WriteFileHandler {
 	public String getSuccess() {
 		return result;
 	}
+	
+	// ---------- TEST CASE ---------- //
+	public static void main(String[] args) throws IOException {
+		WriteFileHandler wfh = new WriteFileHandler();
+		
+		wfh.writeFile();
+		
+		System.out.println(wfh.getSuccess());
+	}
 }
