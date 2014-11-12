@@ -51,6 +51,8 @@ public class UserLocator {
 		ul.setUser("mp755");
 		User user = ul.search();
 		
-		System.out.println(user.getUserName() + "\n" + user.getUserPassword());
+		if(user != null) {
+			System.out.println(user.getUserName() + "\n" + user.getUserPassword());
+		}
 	}
 }
