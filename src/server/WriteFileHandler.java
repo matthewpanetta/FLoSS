@@ -7,29 +7,30 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class WriteFileHandler {
-	String result = "";
+	private String result = "";
+	private String baseURL = "http://65.185.85.1//writeFile.php?filename=";
 	
 	public void writeFile() throws IOException {
 		File[] files = getFiles();		
 		String fileName = "";	
-		HttpURLConnection httpUrlConnection;
+		Connection c;
 		
 		for (File f : files) {
-			fileName = getFileName(f);	
+			fileName = getFileName(f);
 			
-			httpUrlConnection = setupConnection(fileName);
+			c = new Connection(baseURL + fileName);
+			c.setupPostConnection();
 			
-			writeToOutput(httpUrlConnection, f);
+			//httpUrlConnection = setupConnection(fileName);
 			
-			readStream(httpUrlConnection);
+			writeToOutput(c, f);
+			
+			readStream(c);
 		}
 	}
 	
@@ -39,14 +40,6 @@ public class WriteFileHandler {
 		fileName = fileName.replaceAll("\\s", "");	// Eliminate spaces in file name
 		
 		return fileName;
-	}
-	
-	public HttpURLConnection setupConnection(String fileName) throws MalformedURLException, IOException {
-		HttpURLConnection httpUrlConnection = (HttpURLConnection) new URL("http://65.185.85.1//writeFile.php?filename=" + fileName).openConnection();	// Specify the URL of the writeFile script on the server.
-		httpUrlConnection.setDoOutput(true);
-		httpUrlConnection.setRequestMethod("POST");	// PHP script uses POST.
-		
-		return httpUrlConnection;
 	}
 	
 	public File[] getFiles() {
@@ -70,8 +63,8 @@ public class WriteFileHandler {
 		return null;
 	}
 	
-	public void writeToOutput(HttpURLConnection httpUrlConnection, File f) throws IOException {
-		OutputStream os = httpUrlConnection.getOutputStream();
+	public void writeToOutput(Connection c, File f) throws IOException {
+		OutputStream os = c.getConnection().getOutputStream();
 		FileInputStream fis = new FileInputStream(f);
 		BufferedInputStream bis = new BufferedInputStream(fis);
 		
@@ -86,11 +79,11 @@ public class WriteFileHandler {
 		fis.close();
 	}
 	
-	public void readStream(HttpURLConnection httpUrlConnection) throws IOException {
+	public void readStream(Connection c) throws IOException {
 		// Read the echo statement in the PHP file.
 		String s;
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(httpUrlConnection.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(c.getConnection().getInputStream()));
 		
 		s = null;
 		while ((s = in.readLine()) != null) {
