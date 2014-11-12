@@ -18,19 +18,19 @@ public class WriteFileHandler {
 	public void writeFile() throws IOException {
 		File[] files = getFiles();		
 		String fileName = "";	
-		Connection c;
+		ServerConnection c = ServerConnection.getInstance();
 		
 		for (File f : files) {
 			fileName = getFileName(f);
 			
-			c = new Connection(baseURL + fileName);
+			c.updateURL(baseURL + fileName);
 			c.setupPostConnection();
-			
-			//httpUrlConnection = setupConnection(fileName);
 			
 			writeToOutput(c, f);
 			
 			readStream(c);
+			
+			c.closeConnection();
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class WriteFileHandler {
 		return null;
 	}
 	
-	public void writeToOutput(Connection c, File f) throws IOException {
+	public void writeToOutput(ServerConnection c, File f) throws IOException {
 		OutputStream os = c.getConnection().getOutputStream();
 		FileInputStream fis = new FileInputStream(f);
 		BufferedInputStream bis = new BufferedInputStream(fis);
@@ -79,7 +79,7 @@ public class WriteFileHandler {
 		fis.close();
 	}
 	
-	public void readStream(Connection c) throws IOException {
+	public void readStream(ServerConnection c) throws IOException {
 		// Read the echo statement in the PHP file.
 		String s;
 		
