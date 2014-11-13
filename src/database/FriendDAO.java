@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import client.User;
 
 /* FriendDAO class:
  * 		This class is responsible for creating, checking, and deleting friendship statuses in the database.
@@ -22,8 +23,6 @@ import java.util.List;
  * 		+ boolean delete(User user, User friend)		: Will delete the friendship between two users.
  * 				-TRUE if friendship is deleted, FALSE if it still exists.
  */
-
-import client.User;
 
 public class FriendDAO {
 	private DBConnection connection = DBConnection.getInstance();
@@ -84,7 +83,7 @@ public class FriendDAO {
 		}
 		
 		catch (SQLException e) {
-			return false;
+			isFriend = false;
 		}
 		
 		finally {
