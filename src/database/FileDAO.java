@@ -97,7 +97,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				file = new File(result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);				
+				file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);				
 			}
 		}
 		
@@ -140,7 +140,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				File file = new File(result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);
+				File file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);
 				fileList.add(file);
 			}			
 		}
