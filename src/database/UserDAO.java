@@ -11,15 +11,27 @@ import java.util.List;
 import client.User;
 
 /* UserDAO class:
+ * 		DAO = Data Access Object, a Java EE design pattern for interacting with a database.
+ * 
  * 		This class is responsible for creating, reading, updating, and deleting database entries specific to a user.
  * 		The class uses a connection to the database, through DBConnection.
  *		 
  * 
+ * 	Methods:
+ * 		+ boolean create(User user) 		: Will create a new user entry in the database
+ * 				-TRUE if creation successful, FALSE if unsuccessful
  * 
+ * 		+ User getUser(String userName) 	: Will retrieve a specified user from the database
+ * 				-USER object with generated fields from database
  * 
+ * 		+ List<User> getAllUsers()			: Will retrieve every user in the database in an ArrayList
+ * 				-ARRAYLIST of every user in the database.
  * 
+ * 		+ boolean update(User user)			: Will alter a user's password. (Can technically alter userName as well, but this should not be supported.
+ * 				-TRUE if update successful, FALSE if unsuccessful
  * 
- * 
+ * 		+ boolean delete(String userName)	: Will delete a specified user from the database
+ * 				-TRUE if delete successful, FALSE if unsuccessful
  */
 
 public class UserDAO {
