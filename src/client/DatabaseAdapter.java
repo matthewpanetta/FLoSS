@@ -2,7 +2,7 @@ package client;
 
 public class DatabaseAdapter {
 	public User searchUserDatabase(String username){
-
+		return null;
 	}
 	public void createUser(){
 		
@@ -26,7 +26,7 @@ public class DatabaseAdapter {
 		
 	}
 	public File retrieveFile(String filename){
-		
+		return null;
 	}
 	
 	public void addOwner(User u, Permission p) {
