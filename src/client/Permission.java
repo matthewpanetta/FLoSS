@@ -1,51 +1,55 @@
 package client;
 
 public class Permission {
-	private User ownerUser;
-	private User permittedUser;
-	private String fileName;
-	private char permissionType;
+	private String userName;
+	private int permissionID;
+	private int fileID;
+	private int permissionType;		// 0 = Read Access, 1 = Write Access
 	
-	// Permission Type Legend
-	// r = read
-	// w = write
-	// m = modify
-	// d = delete
-	// o = owner
+	public Permission(String userName, int fileID, int permissionType) {
+		this.userName = userName;
+		this.fileID = fileID;
+		this.permissionType = permissionType;
+	}
 	
-	public Permission(char permissionFlag) {
-		permissionType = permissionFlag;
+	public Permission(int permissionID, String userName, int fileID, int permissionType) {
+		this.permissionID = permissionID;
+		this.userName = userName;
+		this.fileID = fileID;
+		this.permissionType = permissionType;
 	}
 
-	public User getOwnerUser() {
-		return ownerUser;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setOwnerUser(User ownerUser) {
-		this.ownerUser = ownerUser;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public User getPermittedUser() {
-		return permittedUser;
+	public int getFileID() {
+		return fileID;
 	}
 
-	public void setPermittedUser(User permittedUser) {
-		this.permittedUser = permittedUser;
+	public void setFileID(int fileID) {
+		this.fileID = fileID;
 	}
 
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public char getPermissionType() {
+	public int getPermissionType() {
 		return permissionType;
 	}
 
-	public void setPermissionType(char permissionType) {
+	public void setPermissionType(int permissionType) {
 		this.permissionType = permissionType;
 	}
+
+	public int getPermissionID() {
+		return permissionID;
+	}
+
+	public void setPermissionID(int permissionID) {
+		this.permissionID = permissionID;
+	}
+	
+	
 }
