@@ -20,6 +20,8 @@ import client.File;
  * 		+ File getFile(String userName, String fileName)	: Will retrieve a file entry on the database. The username and filename together form a composite key, which will get a unique file entry.
  * 			-FILE object with everything generated.
  * 
+ * 		+ File getFile(int fileID)							: Will do the same as above
+ * 
  * 		+ List<File> getFileList(String userName)			: Will retrieve every file entry for one specified user.
  * 			-ARRAYLIST of File objects, with everything generated.
  * 
@@ -83,6 +85,55 @@ public class FileDAO {
 			statement = connection.getConnection().prepareStatement("SELECT * FROM file WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, userName);
 			statement.setString(2, fileName);
+			
+			result = statement.executeQuery();
+			
+			
+			if(!result.isBeforeFirst()) {
+				file = null;
+			}
+			
+			else {
+				result.next();
+				
+				Date modifiedDate = result.getTimestamp("dateLastModified");
+				Date uploadDate = result.getTimestamp("dateUploaded");
+				
+				file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);				
+			}
+		}
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+			file = null;
+		}
+		
+		finally {
+			connection.close();
+			try {
+				if(statement != null) {
+					statement.close();
+				}
+				
+				if(result != null) {
+					result.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return file;
+	}
+	
+	public File getFile(int fileID) {
+		File file;
+		
+		try {
+			connection.connect();
+			statement = connection.getConnection().prepareStatement("SELECT * FROM file WHERE fileID = ?;");
+			statement.setInt(1, fileID);
 			
 			result = statement.executeQuery();
 			
