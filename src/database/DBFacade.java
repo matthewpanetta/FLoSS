@@ -7,6 +7,18 @@ import client.File;
 import client.Permission;
 import client.User;
 
+/* Database Facade class
+ * 		This class wraps all functionality in the database package in one class.
+ * 		Any class outside of the database package should associate only with this class.
+ * 		This class is a singleton.
+ * 
+ * Methods:
+ * 		This class contains many of the same methods as other classes in this package. Check those respective classes for info on those methods.
+ * 		
+ * 		+ boolean registerUser(User user)					: Will register a user and log them on.
+ * 		+ List<File> getCollaborations(String userName)		: Will get all files that a user can access from other users. (Files in which the user is granted read/write access). 
+ */
+
 public class DBFacade {
 	private FileDAO fid;
 	private FriendDAO frd;
@@ -129,6 +141,12 @@ public class DBFacade {
 	
 	public File getFile(int fileID) {
 		File file = fid.getFile(fileID);
+		
+		return file;
+	}
+	
+	public File getFile(String userName, String fileName) {
+		File file = fid.getFile(userName, fileName);
 		
 		return file;
 	}
