@@ -5,17 +5,23 @@ import java.util.Date;
 public class File {
 	private String fileName;
 	private String filePath;
-	private User owner;
+	private String owner;
 	private Date modifiedDate;
 	private Date creationDate;
 	
-	public File(String fileName, String filePath, User owner, Date modifiedDate, Date creationDate) {
+	public File(String fileName, String filePath, String userName, Date modifiedDate, Date creationDate) {
 		super();
 		this.fileName = fileName;
 		this.filePath = filePath;
-		this.owner = owner;
+		this.owner = userName;
 		this.modifiedDate = modifiedDate;
 		this.creationDate = creationDate;
+	}
+	
+	public File(String fileName, String filePath, String userName) {
+		this.fileName = fileName;
+		this.filePath = filePath;
+		this.owner = userName;
 	}
 	
 	public String getFileName() {
@@ -30,11 +36,11 @@ public class File {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-	public User getOwner() {
+	public String getOwner() {
 		return owner;
 	}
-	public void setOwner(User owner) {
-		this.owner = owner;
+	public void setOwner(String userName) {
+		this.owner = userName;
 	}
 	public Date getModifiedDate() {
 		return modifiedDate;
