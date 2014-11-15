@@ -21,6 +21,9 @@ import client.Permission;
  * 		+ boolean canWrite(String userName, int fileID)		: Will check to see if a user can write to a specific file.
  * 			-TRUE if user has write access, FALSE if user does not have write access.
  * 
+ * 		+ List<Permission> getCollaboratorList(int fileID)	: Will return all permissions for one file.
+ * 			-ARRAYLIST of Permission objects with generated fields.
+ * 
  * 		+ List<Permission> getAccessList(String userName)	: Will return every permission that a specified user has.
  * 			-ARRAYLIST of Permission objects with generated fields.
  * 
@@ -161,6 +164,48 @@ public class PermissionDAO {
 		}
 		
 		return canAccess;
+	}
+	
+	public List<Permission> getCollaboratorList(int fileID) {
+		List<Permission> collaboratorList = new ArrayList<Permission>();
+		
+		try {
+			connection.connect();
+			statement = connection.getConnection().prepareStatement("SELECT * FROM permission WHERE fileID = ?;");
+			statement.setInt(1, fileID);
+			
+			result = statement.executeQuery();
+			
+			while (result.next()) {
+				Permission permission = new Permission(result.getInt("permissionID"), result.getString("userName"), result.getInt("fileID"),
+						result.getInt("permissionType"));
+					collaboratorList.add(permission);
+				
+			}
+		}
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+			collaboratorList = null;
+		}
+		
+		finally {
+			connection.close();
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				
+				if (result != null) {
+					result.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return collaboratorList;
 	}
 	
 	public List<Permission> getAccessList(String userName) {
