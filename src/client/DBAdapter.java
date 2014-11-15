@@ -14,10 +14,10 @@ import database.DBFacade;
  * 			-ARRAYLIST of Files with generated fields. 
  */
 
-public class DatabaseAdapter {
+public class DBAdapter {
 	private DBFacade dbf;
 	
-	public DatabaseAdapter() {
+	public DBAdapter() {
 		dbf = DBFacade.getInstance();
 	}
 	
