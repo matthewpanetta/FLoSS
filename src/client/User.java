@@ -6,11 +6,11 @@ public class User {
 	private String userName;
 	private String password;
 	private String firstName;
+	private String middleInitial;
 	private String lastName;
 	private String email;
-	private Date bithDate;
-	private char gender;
-	private char middleInitial;
+	private String gender;
+	private Date birthDate;
 	
 	public User(String userName, String password) {
 		super();
@@ -18,14 +18,14 @@ public class User {
 		this.password = password;
 	}
 	
-	public User(String userName, String password, String firstName, String lastName, String email, Date bithDate, char gender, char middleInitial) {
+	public User(String userName, String password, String firstName, String middleInitial, String lastName, String gender, String email, Date birthDate) {
 		super();
 		this.userName = userName;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
-		this.bithDate = bithDate;
+		this.birthDate = birthDate;
 		this.gender = gender;
 		this.middleInitial = middleInitial;
 	}
@@ -70,27 +70,27 @@ public class User {
 		this.email = email;
 	}
 
-	public Date getBithDate() {
-		return bithDate;
+	public Date getBirthDate() {
+		return birthDate;
 	}
 
-	public void setBithDate(Date bithDate) {
-		this.bithDate = bithDate;
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
 
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(char gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
-	public char getMiddleInitial() {
+	public String getMiddleInitial() {
 		return middleInitial;
 	}
 
-	public void setMiddleInitial(char middleInitial) {
+	public void setMiddleInitial(String middleInitial) {
 		this.middleInitial = middleInitial;
 	}
 }

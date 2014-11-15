@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import client.User;
@@ -49,15 +50,24 @@ public class UserDAO {
 	
 	public boolean create(User user) {
 		try {
+			java.sql.Date tempDate = new java.sql.Date(user.getBirthDate().getTime());
+			
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("INSERT INTO user VALUES(?,?);");
+			statement = connection.getConnection().prepareStatement("INSERT INTO user (userName, password, firstName, middleInitial, lastName, gender, birthDate, email) VALUES(?,?,?,?,?,?,?,?);");
 			statement.setString(1, user.getUserName());
-			statement.setString(2, user.getUserPassword());
+			statement.setString(2, user.getPassword());
+			statement.setString(3, user.getFirstName());
+			statement.setString(4, user.getMiddleInitial());
+			statement.setString(5, user.getLastName());
+			statement.setString(6, user.getGender());
+			statement.setDate(7, tempDate);
+			statement.setString(8, user.getEmail());
 			
 			statement.executeUpdate();
 		}
 		
 		catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -97,7 +107,11 @@ public class UserDAO {
 			
 			else {
 				result.next();
-				user = new User(result.getString(1), result.getString(2));		// this seems like bad practice...oh well!
+				
+				Date tempDate = new Date(result.getDate("birthDate").getTime());
+				
+				user = new User(result.getString("userName"), result.getString("password"), result.getString("firstName"), result.getString("middleInitial"), 
+					result.getString("lastName"), result.getString("gender"), result.getString("email"), tempDate);
 			}
 		}
 		
@@ -134,7 +148,10 @@ public class UserDAO {
 			result = statement.executeQuery();
 			
 			while(result.next()) {
-				User user = new User(result.getString("userName"), result.getString("password"));
+				Date tempDate = new Date(result.getDate("birthDate").getTime());
+				
+				User user = new User(result.getString("userName"), result.getString("password"), result.getString("firstName"), result.getString("middleInitial"), 
+					result.getString("lastName"), result.getString("gender"), result.getString("email"), tempDate);
 				userList.add(user);
 			}			
 		}
@@ -164,14 +181,23 @@ public class UserDAO {
 	
 	public boolean update(User user) {
 		try {
+			java.sql.Date tempDate = new java.sql.Date(user.getBirthDate().getTime());
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE user SET password = ? WHERE userName LIKE(?);");
-			statement.setString(1, user.getUserPassword());
-			statement.setString(2, user.getUserName());
+			statement = connection.getConnection().prepareStatement("UPDATE user SET userName = ?, password = ?, firstName = ?, middleInitial = ?, lastName = ?, gender = ?, birthDate = ?, email = ? WHERE userName LIKE(?);");
+			statement.setString(1, user.getUserName());
+			statement.setString(2, user.getPassword());
+			statement.setString(3, user.getFirstName());
+			statement.setString(4, user.getMiddleInitial());
+			statement.setString(5, user.getLastName());
+			statement.setString(6, user.getGender());
+			statement.setDate(7, tempDate);
+			statement.setString(8, user.getEmail());
+			statement.setString(9, user.getUserName());
 			
 			statement.executeUpdate();
 		} 
 		catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -202,9 +228,9 @@ public class UserDAO {
 			connection.connect();
 			PreparedStatement statement = connection.getConnection().prepareStatement("SELECT * FROM user WHERE userName = ? AND password = ?;");
 			statement.setString(1, user.getUserName());
-			statement.setString(2, user.getUserPassword());
+			statement.setString(2, user.getPassword());
 			
-			ResultSet result = statement.executeQuery();
+			result = statement.executeQuery();
 			
 			
 			if(result.isBeforeFirst()) {
@@ -370,36 +396,44 @@ public class UserDAO {
 	// ---------- TEST CASE ---------- //
 	public static void main(String[] args) {
 		UserDAO uw = new UserDAO();
-		User user = new User("mp755", "test123");
-		User user2 = new User("mp755", "test");
+		
+		long dateMillis = 762238860000L;
+		Date date = new Date(dateMillis);
+		
+		User user = new User("mp755", "test123", "Matthew", "D", "Panetta", "M", "mdp5280@psu.edu", date);
+		
 		
 		// COMMENT OUT ALL LINES THAT YOU DON'T WANT TO TEST! //
 		
 		//System.out.println(uw.create(user));						// CREATE USER
 		//System.out.println(uw.delete(user.getUserName()));		// DELETE USER
-		//System.out.println(uw.update(user2));						// UPDATE USER
 		
+		/* UPDATE USER */
+		/*user.setPassword("test123");
+		user.setEmail("test@test.com");
+		System.out.println(uw.update(user));
+		*/
+			
 		
 		/* READ USER */
 		
 		/*User userTest = uw.getUser("mp755");
-		System.out.printf("Username: %s\tPassword: %s\n", userTest.getUserName(), userTest.getUserPassword());
+		System.out.printf("Username: %s\t\nPassword: %s\nGender: %s\nEmail: %s\n", userTest.getUserName(), userTest.getPassword(), userTest.getGender(), userTest.getEmail());
 		*/
-		
 		
 		/* GET ALL USERS */
 		
 		/*List<User> userList = uw.getAllUsers();
 		
 		for(User u : userList) {
-			System.out.printf("Username: %s\tPassword: %s\n", u.getUserName(), u.getUserPassword());
+			System.out.printf("Username: %s\t\nPassword: %s\nGender: %s\nEmail: %s\n", u.getUserName(), u.getPassword(), u.getGender(), u.getEmail());
 		}*/
 		
 		/* AUTHENTICATION CHECK USER */
-		/*uw.authenticate(user);
-		uw.deauthenticate(user);
+		//uw.authenticate(user);
+		//uw.deauthenticate(user);
 		
-		System.out.println(uw.isOnline(user.getUserName()));
-		*/
+		//System.out.println(uw.isOnline(user.getUserName()));
+		
 	}
 }

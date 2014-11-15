@@ -83,10 +83,10 @@ public class DBFacade {
 		return userList;
 	}
 	
-	public boolean changePassword(User user) {
-		boolean passChanged = ud.update(user);
+	public boolean updateUser(User user) {
+		boolean userChanged = ud.update(user);
 		
-		return passChanged;
+		return userChanged;
 	}
 	
 	public boolean removeUser(User user) {
