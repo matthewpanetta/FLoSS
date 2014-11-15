@@ -17,6 +17,7 @@ import client.User;
  * 		
  * 		+ boolean registerUser(User user)					: Will register a user and log them on.
  * 		+ List<File> getCollaborations(String userName)		: Will get all files that a user can access from other users. (Files in which the user is granted read/write access). 
+ * 		+ List<File> getAllFiles(String userName)			: Will get all files that a user owns and has access to.
  */
 
 public class DBFacade {
@@ -226,4 +227,15 @@ public class DBFacade {
 		return fileList;
 	}
 	
+	public List<File> getAllFiles(String userName) {
+		List<File> collabList = getCollaborations(userName);
+		List<File> ownedList = getFiles(userName);
+		
+		List<File> masterList = new ArrayList<File>();
+		
+		masterList.addAll(collabList);
+		masterList.addAll(ownedList);
+		
+		return masterList;
+	}
 }

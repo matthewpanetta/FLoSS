@@ -1,6 +1,26 @@
 package client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import database.DBFacade;
+
+/* Database Adapter
+ * 		Client-Side adapter for the database.
+ * 		All classes on the client side should communicate with this class, if they intend to communicate with the database.
+ * 
+ * Methods:
+ * 		+ List<File> search(User user, String fileName)		: Will return a list of files that match the fileName searched for. The user argument must be the user who is performing the search.
+ * 			-ARRAYLIST of Files with generated fields. 
+ */
+
 public class DatabaseAdapter {
+	private DBFacade dbf;
+	
+	public DatabaseAdapter() {
+		dbf = DBFacade.getInstance();
+	}
+	
 	public User searchUserDatabase(String username){
 		return null;
 	}
@@ -47,5 +67,18 @@ public class DatabaseAdapter {
 	
 	public boolean checkAccessor(User u, Group g) {
 		return true;
+	}
+	
+	public List<File> search(User user, String fileName) {
+		List<File> fileList = new ArrayList<File>();
+		List<File> allFiles = dbf.getAllFiles(user.getUserName());
+		
+		for(File f : allFiles) {
+			if(f.getFileName().equals(fileName)) {
+				fileList.add(f);
+			}
+		}
+		
+		return fileList;
 	}
 }
