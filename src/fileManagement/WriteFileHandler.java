@@ -115,11 +115,12 @@ public class WriteFileHandler {
 	
 	// ---------- TEST CASE ---------- //
 	public static void main(String[] args) throws IOException {
-		String userName = "test";		
+		String userPath = "test";
+		File file = new File("C:\\Users\\mp755\\Documents\\SPRING 2014\\WORK\\CMPSC 221\\QuizCheatSheet2.docx");
 		
 		WriteFileHandler wfh = new WriteFileHandler();
 		
-		//wfh.writeFile(userName);
+		wfh.writeFile(file, userPath);
 		
 		System.out.println(wfh.getResult());
 	}
