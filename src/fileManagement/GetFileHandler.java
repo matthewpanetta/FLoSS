@@ -43,6 +43,7 @@ public class GetFileHandler {
          }
     }
 	
+	// ---------- TEST CASE ---------- //
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		GetFileHandler gfh = new GetFileHandler();
 		gfh.getFile("test//QuizCheatSheet2.docx", "C://Users//mp755//Desktop//test.docx");
