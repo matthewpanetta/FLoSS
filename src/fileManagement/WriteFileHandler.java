@@ -18,7 +18,9 @@ import client.User;
  * 		This class is responsible for writing files to a server location.
  * 	
  * Methods:
- * 		+ void writeFile(File[] files)						: Will write all files in the array to a server location
+ * 		+ void writeFile(File file, String userPath)		: Will write all files in the array to a server location. userPath = "[username]//[subfolder]//[subfolder]// ...etc
+ * 															: If there are no subfolders, userPath = "[username]".
+ * 
  * 		- String getFileName(File f)						: Will eliminate all whitespace in the file name
  * 			-String object containing the file name
  * 	
@@ -33,22 +35,19 @@ public class WriteFileHandler {
 	private String baseURL = "http://65.185.85.1//scripts//writeFile.php";
 	private String fileName = "";
 	
-	public void writeFile(File[] files, String userName) throws IOException {
-		//File[] files = getFiles();
+	public void writeFile(File file, String userPath) throws IOException {
 		ServerConnection c = ServerConnection.getInstance();	
 		
-		for (File f : files) {
-			fileName = getFileName(f);
+		fileName = getFileName(file);
 			
-			c.updateURL(baseURL + "?filename=" + fileName + "&username=" + userName);
-			c.setupPostConnection();
+		c.updateURL(baseURL + "?filename=" + fileName + "&userpath=" + userPath);
+		c.setupPostConnection();
 			
-			writeToOutput(c, f);
-			
-			readStream(c);
-			
-			c.closeConnection();
-		}
+		writeToOutput(c, file);
+		
+		readStream(c);
+		
+		c.closeConnection();
 	}
 	
 	private String getFileName(File f) {
@@ -59,7 +58,7 @@ public class WriteFileHandler {
 		return fileName;
 	}
 	
-	/*public File[] getFiles() {
+	public File[] getFiles() {
 		// Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
 		JFileChooser chooser = new JFileChooser();
 	
@@ -78,7 +77,7 @@ public class WriteFileHandler {
 		}
 		
 		return null;
-	}*/
+	}
 	
 	private void writeToOutput(ServerConnection c, File f) throws IOException {
 		OutputStream os = c.getConnection().getOutputStream();
@@ -116,7 +115,7 @@ public class WriteFileHandler {
 	
 	// ---------- TEST CASE ---------- //
 	public static void main(String[] args) throws IOException {
-		//String userName = "test";		
+		String userName = "test";		
 		
 		WriteFileHandler wfh = new WriteFileHandler();
 		
