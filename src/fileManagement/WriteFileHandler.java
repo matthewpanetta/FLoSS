@@ -58,7 +58,7 @@ public class WriteFileHandler {
 		return fileName;
 	}
 	
-	public File[] getFiles() {
+	/*public File[] getFiles() {
 		// Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
 		JFileChooser chooser = new JFileChooser();
 	
@@ -77,7 +77,7 @@ public class WriteFileHandler {
 		}
 		
 		return null;
-	}
+	}*/
 	
 	private void writeToOutput(ServerConnection c, File f) throws IOException {
 		OutputStream os = c.getConnection().getOutputStream();
