@@ -2,6 +2,7 @@ package fileManagement;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,19 +12,35 @@ import java.io.OutputStream;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import client.User;
+
+/* Write File Handler
+ * 		This class is responsible for writing files to a server location.
+ * 	
+ * Methods:
+ * 		+ void writeFile(File[] files)						: Will write all files in the array to a server location
+ * 		- String getFileName(File f)						: Will eliminate all whitespace in the file name
+ * 			-String object containing the file name
+ * 	
+ * 		- void writeToOutput(ServerConnection c, File f)	: Will transform the file intoa  byte array and will send each byte to the server.
+ * 		- void readStream(ServerConnection c)				: Will read the server's response to the file. (Echo statement in php file)
+ * 		+ String getResult()								: Will return the result of the file upload.
+ * 			-String object containing the server's response. 
+ */
+
 public class WriteFileHandler {
 	private String result = "";
-	private String baseURL = "http://65.185.85.1//writeFile.php?filename=";
+	private String baseURL = "http://65.185.85.1//scripts//writeFile.php";
+	private String fileName = "";
 	
-	public void writeFile() throws IOException {
-		File[] files = getFiles();		
-		String fileName = "";	
-		ServerConnection c = ServerConnection.getInstance();
+	public void writeFile(File[] files, String userName) throws IOException {
+		//File[] files = getFiles();
+		ServerConnection c = ServerConnection.getInstance();	
 		
 		for (File f : files) {
 			fileName = getFileName(f);
 			
-			c.updateURL(baseURL + fileName);
+			c.updateURL(baseURL + "?filename=" + fileName + "&username=" + userName);
 			c.setupPostConnection();
 			
 			writeToOutput(c, f);
@@ -34,18 +51,18 @@ public class WriteFileHandler {
 		}
 	}
 	
-	public String getFileName(File f) {
-		String fileName = f.getName();				// Get the file's name
+	private String getFileName(File f) {
+		fileName = f.getName();						// Get the file's name
 		fileName = fileName.trim();					// Eliminate whitespace before and after string
 		fileName = fileName.replaceAll("\\s", "");	// Eliminate spaces in file name
 		
 		return fileName;
 	}
 	
-	public File[] getFiles() {
+	/*public File[] getFiles() {
 		// Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
 		JFileChooser chooser = new JFileChooser();
-		
+	
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
 			"gif");
@@ -61,9 +78,9 @@ public class WriteFileHandler {
 		}
 		
 		return null;
-	}
+	}*/
 	
-	public void writeToOutput(ServerConnection c, File f) throws IOException {
+	private void writeToOutput(ServerConnection c, File f) throws IOException {
 		OutputStream os = c.getConnection().getOutputStream();
 		FileInputStream fis = new FileInputStream(f);
 		BufferedInputStream bis = new BufferedInputStream(fis);
@@ -79,7 +96,7 @@ public class WriteFileHandler {
 		fis.close();
 	}
 	
-	public void readStream(ServerConnection c) throws IOException {
+	private void readStream(ServerConnection c) throws IOException {
 		// Read the echo statement in the PHP file.
 		String s;
 		
@@ -93,17 +110,18 @@ public class WriteFileHandler {
 		in.close();
 	}
 	
-	
-	public String getSuccess() {
+	public String getResult() {
 		return result;
 	}
 	
 	// ---------- TEST CASE ---------- //
 	public static void main(String[] args) throws IOException {
+		//String userName = "test";		
+		
 		WriteFileHandler wfh = new WriteFileHandler();
 		
-		wfh.writeFile();
+		//wfh.writeFile(userName);
 		
-		System.out.println(wfh.getSuccess());
+		System.out.println(wfh.getResult());
 	}
 }

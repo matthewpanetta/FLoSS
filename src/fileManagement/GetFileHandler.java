@@ -8,6 +8,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class GetFileHandler {
+	private String baseURL = "http://65.185.85.1";
+	
+	
 	public static void main(String[] args) throws IOException {
          URLConnection http = new URL("http://65.185.85.1/PanettaERD.docx")
                    .openConnection();
