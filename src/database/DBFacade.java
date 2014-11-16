@@ -123,7 +123,15 @@ public class DBFacade {
 	
 	/* FILE DAO */
 	public boolean addFile(File file) {
-		boolean created = fid.create(file);
+		File test = fid.getFile(file.getOwner(), file.getFileName());
+		boolean created;
+		
+		if(test == null) {
+			created = fid.create(file);
+		} else {
+			fid.updateTimestamp(file.getOwner(), file.getFileName());
+			created = false;
+		}
 		
 		return created;
 	}

@@ -1,9 +1,9 @@
 package client;
 
 public abstract class Handler {
-	private DBAdapter dbAdapter;
+	private ServerAdapter dbAdapter;
 	
-	public DBAdapter getDatabaseAdapter(){
+	public ServerAdapter getDatabaseAdapter(){
 		return dbAdapter;
 	}
 }
