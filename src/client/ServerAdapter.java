@@ -100,7 +100,6 @@ public class ServerAdapter {
 		int index = clientFilePath.lastIndexOf("\\");
 		String fileName = clientFilePath.substring(index+1);
 		client.File file = new client.File(fileName, serverFilePath, u.getUserName());
-		
 		dbf.addFile(file);
 		file = dbf.getFile(u.getUserName(), fileName);
 		Permission perm = new Permission(u.getUserName(), file.getFileID(), 1);
@@ -114,6 +113,31 @@ public class ServerAdapter {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void reupload(User u, String clientFilePath, String serverFilePath) {
+		int index = clientFilePath.lastIndexOf("\\");
+		String fileName = clientFilePath.substring(index+1);
+		client.File file = null;
+		
+		List<client.File> fileList = dbf.getAllFiles(u.getUserName());
+		
+		for(client.File f : fileList) {
+			if(f.getFileName().equals(fileName)) {
+				file = f;
+			}
+		}
+		
+		if(!(file==null)) {
+			dbf.updateTimestamp(file.getOwner(), fileName);
+		
+			try {
+				fmf.upload(clientFilePath, serverFilePath);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
