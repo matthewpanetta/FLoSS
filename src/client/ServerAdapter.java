@@ -109,7 +109,7 @@ public class ServerAdapter {
 		}
 		
 		try {
-			fmf.upload(clientFilePath, serverFilePath);
+			fmf.upload(clientFilePath, serverFilePath, 0);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -133,7 +133,7 @@ public class ServerAdapter {
 			dbf.updateTimestamp(file.getOwner(), fileName);
 		
 			try {
-				fmf.upload(clientFilePath, serverFilePath);
+				fmf.upload(clientFilePath, serverFilePath, 1);
 			}
 			catch (IOException e) {
 				e.printStackTrace();

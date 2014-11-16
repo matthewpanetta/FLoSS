@@ -24,10 +24,13 @@ public class FMFacade {
 		return instance;
 	}
 	
-	public void upload(String clientFilePath, String serverFilePath) throws IOException {
+	public void upload(String clientFilePath, String serverFilePath, int flag) throws IOException {
 		File file = getClientFile(clientFilePath);
-		wfh.writeFile(file, serverFilePath);		
-		wfh.writeFile(file, "temp\\" + serverFilePath);
+		wfh.writeFile(file, serverFilePath);
+		
+		if(flag == 0) {
+			wfh.writeFile(file, "temp\\" + serverFilePath);
+		}
 	}
 	
 	public void download(String serverFilePath, String clientFilePath) throws MalformedURLException, IOException {
