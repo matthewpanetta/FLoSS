@@ -3,6 +3,8 @@ package fileManagement;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class FMFacade {
 	private GetFileHandler gfh;
@@ -24,14 +26,15 @@ public class FMFacade {
 	
 	public void upload(String clientFilePath, String serverFilePath) throws IOException {
 		File file = getClientFile(clientFilePath);
-		wfh.writeFile(file, serverFilePath);
+		wfh.writeFile(file, serverFilePath);		
+		wfh.writeFile(file, "temp\\" + serverFilePath);
 	}
 	
 	public void download(String serverFilePath, String clientFilePath) throws MalformedURLException, IOException {
 		gfh.getFile(serverFilePath, clientFilePath);
 	}
 	
-	public File getClientFile(String clientFilePath) {
+	public File getClientFile(String clientFilePath) throws MalformedURLException {
 		File tempFile = new File(clientFilePath);
 		return tempFile;
 	}

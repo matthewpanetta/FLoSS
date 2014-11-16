@@ -192,9 +192,13 @@ public class DBFacade {
 	}
 	
 	public boolean canAccess(String userName, String fileName) {
+		boolean access = false;
 		File tempFile = fid.getFile(userName, fileName);
 		
-		boolean access = pd.canAccess(userName, tempFile.getFileID());
+		if(!(tempFile == null)) {
+			access = pd.canAccess(userName, tempFile.getFileID());
+		}
+		
 		return access;
 	}
 	

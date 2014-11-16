@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,9 +101,31 @@ public class ServerAdapter {
 		String fileName = clientFilePath.substring(index+1);
 		client.File file = new client.File(fileName, serverFilePath, u.getUserName());
 		
-		if(dbf.addFile(file)) {
+		dbf.addFile(file);
+		file = dbf.getFile(u.getUserName(), fileName);
+		Permission perm = new Permission(u.getUserName(), file.getFileID(), 1);
+		
+		if(!dbf.canAccess(u.getUserName(), fileName)) {
+			dbf.addPermission(perm);
+		}
+		
+		try {
+			fmf.upload(clientFilePath, serverFilePath);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void download(User u, String serverFilePath, String clientFilePath) {
+		int index = clientFilePath.lastIndexOf("\\");
+		String fileName = clientFilePath.substring(index+1);
+		if(dbf.canAccess(u.getUserName(), fileName)) {
 			try {
-				fmf.upload(clientFilePath, serverFilePath);
+				fmf.download(serverFilePath, clientFilePath);
+			}
+			catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -110,16 +133,9 @@ public class ServerAdapter {
 		}
 	}
 	
-	public void download(String serverFilePath, String clientFilePath) {
-		try {
-			fmf.download(serverFilePath, clientFilePath);
-		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void retrieve(User user, String fileName) {
+		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName);
+		upload(user, "C:\\temp\\"+ fileName, user.getUserName());
 	}
 	
 	public static void main(String[] args) {
@@ -128,11 +144,14 @@ public class ServerAdapter {
 		String serverFilePath = "mp755";
 		
 		ServerAdapter sa = new ServerAdapter();
-		sa.upload(u, clientFilePath, serverFilePath);
+		//sa.upload(u, clientFilePath, serverFilePath);
 		
 		serverFilePath = "mp755\\ugates.docx";
 		clientFilePath = "C:\\Users\\mp755\\Desktop\\ugates.docx";
 		
-		sa.download(serverFilePath, clientFilePath);
+		//sa.download(u, serverFilePath, clientFilePath);
+		
+		
+		sa.retrieve(u, "ugates.docx");
 	}
 }
