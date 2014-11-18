@@ -2,7 +2,6 @@ package client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +81,23 @@ public class ServerAdapter {
 	public boolean checkAccessor(User u, Group g) {
 		return true;
 	}
+        
+        public List<File> getFileList(String userName) {
+            return dbf.getAllFiles(userName);
+        }
+        
+        public boolean register(User user) {
+            boolean isRegistered;
+            
+            isRegistered = dbf.registerUser(user);
+            
+            return isRegistered;
+        }
 	
+        // hackers need to encrypt this later
+        public boolean authenticateUser(User u){
+            return dbf.authenticate(u);
+        }
 	public List<File> search(User user, String fileName) {
 		List<File> fileList = new ArrayList<File>();
 		List<File> allFiles = dbf.getAllFiles(user.getUserName());
