@@ -6,7 +6,6 @@ import java.util.List;
 import client.File;
 import client.Permission;
 import client.User;
-
 /* Database Facade class
  * 		This class wraps all functionality in the database package in one class.
  * 		Any class outside of the database package should associate only with this class.

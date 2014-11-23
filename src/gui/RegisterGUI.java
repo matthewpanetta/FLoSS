@@ -6,8 +6,11 @@
 
 package gui;
 
+import client.PasswordHash;
 import client.ServerAdapter;
 import client.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -191,18 +194,31 @@ public class RegisterGUI extends javax.swing.JFrame {
         Date date = null;
         String[] credentials = new String[9];
         credentials[0] = userName.getText();
-        credentials[1] = new String(password.getPassword());
+        try {
+            credentials[1] = PasswordHash.createHash(password.getPassword());
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //credentials[1] = new String(password.getPassword());
         credentials[2] = new String(passwordConfirm.getPassword());
         credentials[3] = firstName.getText();
         credentials[4] = midInit.getText();
         credentials[5] = lastName.getText();
         credentials[6] = gender.getText();
-        credentials[7] = birthDate.getText();
+        //credentials[7] = birthDate.getText();
         credentials[8] = email.getText();
         
         boolean passwordsMatch = false;
-        if(credentials[1].equals(credentials[2])) {
-            passwordsMatch = true;
+        try {
+            if(PasswordHash.validatePassword(credentials[2], credentials[1])) {
+                passwordsMatch = true;
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if(passwordsMatch) {

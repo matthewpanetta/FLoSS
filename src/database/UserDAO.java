@@ -7,8 +7,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import client.PasswordHash;
 import client.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* UserDAO class:
  * 		DAO = Data Access Object, a Java EE design pattern for interacting with a database.
@@ -221,15 +225,16 @@ public class UserDAO {
 		
 	}
 	
-	public boolean authenticate(User user) {
-		boolean authenticated;
+	public boolean authenticate(User user) throws NoSuchAlgorithmException {
+		boolean authenticated = false;
 		
 		try {
 			connection.connect();
 			PreparedStatement statement = connection.getConnection().prepareStatement("SELECT * FROM user WHERE userName = ? AND password = ?;");
 			statement.setString(1, user.getUserName());
-			statement.setString(2, user.getPassword());
-			
+			//statement.setString(2, user.getPassword());
+			statement.setString(2, PasswordHash.createHash(user.getPassword()));
+                        
 			result = statement.executeQuery();
 			
 			
@@ -253,7 +258,9 @@ public class UserDAO {
 		catch (SQLException e) {
 			e.printStackTrace();
 			authenticated = false;
-		}
+		} catch (InvalidKeySpecException ex) {
+                Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
 		
 		finally {
 			connection.close();
