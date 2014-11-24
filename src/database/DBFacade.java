@@ -6,6 +6,8 @@ import java.util.List;
 import client.File;
 import client.Permission;
 import client.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 /* Database Facade class
  * 		This class wraps all functionality in the database package in one class.
  * 		Any class outside of the database package should associate only with this class.
@@ -43,7 +45,7 @@ public class DBFacade {
 	}
 	
 	/* USER DAO */
-	public boolean registerUser(User user) {
+	public boolean registerUser(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		boolean isRegistered = ud.create(user);
 		
 		if(isRegistered) {
@@ -53,7 +55,7 @@ public class DBFacade {
 		return isRegistered;
 	}
 	
-	public boolean authenticate(User user) {
+	public boolean authenticate(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		boolean authenticated = ud.authenticate(user);
 		
 		return authenticated;

@@ -207,7 +207,7 @@ public class RegisterGUI extends javax.swing.JFrame {
         credentials[4] = midInit.getText();
         credentials[5] = lastName.getText();
         credentials[6] = gender.getText();
-        //credentials[7] = birthDate.getText();
+        credentials[7] = birthDate.getText();
         credentials[8] = email.getText();
         
         boolean passwordsMatch = false;

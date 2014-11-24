@@ -7,6 +7,8 @@ import java.util.List;
 
 import database.DBFacade;
 import fileManagement.FMFacade;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /* Database Adapter
  * 		Client-Side adapter for the database.
@@ -86,7 +88,7 @@ public class ServerAdapter {
             return dbf.getAllFiles(userName);
         }
         
-        public boolean register(User user) {
+        public boolean register(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
             boolean isRegistered;
             
             isRegistered = dbf.registerUser(user);
@@ -95,7 +97,7 @@ public class ServerAdapter {
         }
 	
         // hackers need to encrypt this later
-        public boolean authenticateUser(User u){
+        public boolean authenticateUser(User u) throws NoSuchAlgorithmException, InvalidKeySpecException{
             return dbf.authenticate(u);
         }
 	public List<File> search(User user, String fileName) {

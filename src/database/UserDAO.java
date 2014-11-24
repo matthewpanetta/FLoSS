@@ -51,6 +51,7 @@ public class UserDAO {
 	private DBConnection connection = DBConnection.getInstance();
 	private PreparedStatement statement = null;
 	private ResultSet result = null;
+        private ResultSet passResult = null;
 	
 	public boolean create(User user) {
 		try {
@@ -225,32 +226,48 @@ public class UserDAO {
 		
 	}
 	
-	public boolean authenticate(User user) throws NoSuchAlgorithmException {
+	public boolean authenticate(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		boolean authenticated = false;
 		
 		try {
 			connection.connect();
-			PreparedStatement statement = connection.getConnection().prepareStatement("SELECT * FROM user WHERE userName = ? AND password = ?;");
-			statement.setString(1, user.getUserName());
+			//PreparedStatement statement = connection.getConnection().prepareStatement("SELECT * FROM user WHERE userName = ? AND password = ?;");
+			//statement.setString(1, user.getUserName());
 			//statement.setString(2, user.getPassword());
-			statement.setString(2, PasswordHash.createHash(user.getPassword()));
+			//statement.setString(2, PasswordHash.createHash(user.getPassword()));
                         
+                        PreparedStatement statement = connection.getConnection().prepareStatement("SELECT * FROM user WHERE userName = ?;");
+			statement.setString(1, user.getUserName());
+		
 			result = statement.executeQuery();
+                        result.next();
+			String key = result.getString(2);
+                        System.out.println(key);
 			
-			
-			if(result.isBeforeFirst()) {
-				authenticated = true;
+			if(PasswordHash.validatePassword(user.getPassword(), key)){
+                                //PreparedStatement getPass = connection.getConnection().prepareStatement("SELECT  password FROM user WHERE username = ?;");
+                               // getPass.setString(1, user.getUserName());
+                               // passResult = getPass.executeQuery();
+                                
+                                // user exists in database, now time to check the hashes
+                                // The reason I can't check the password in the same way as before above is because the hashes are salted
+                                // meaning that you have to use PasswordHash.validateHash() and you can't just hash it and compare
+                                // because due to the salted nature of these hashes, the same string 'test' will hash to different values
+                                // based on the random salt
+                                
+                                    authenticated = true;
 				
-				long currentTimestamp = System.currentTimeMillis();
-				Timestamp timestamp = new Timestamp(currentTimestamp);
+                                    long currentTimestamp = System.currentTimeMillis();
+                                    Timestamp timestamp = new Timestamp(currentTimestamp);
 				
 				
-				statement = connection.getConnection().prepareStatement("UPDATE user SET checkIn = ? WHERE userName = ?;");
-				statement.setTimestamp(1, timestamp);
-				statement.setString(2, user.getUserName());
+                                    statement = connection.getConnection().prepareStatement("UPDATE user SET checkIn = ? WHERE userName = ?;");
+                                    statement.setTimestamp(1, timestamp);
+                                    statement.setString(2, user.getUserName());
 				
-				statement.executeUpdate();
-				
+                                    statement.executeUpdate();
+                                
+                                
 			} else {
 				authenticated = false;
 			}
@@ -258,9 +275,7 @@ public class UserDAO {
 		catch (SQLException e) {
 			e.printStackTrace();
 			authenticated = false;
-		} catch (InvalidKeySpecException ex) {
-                Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
-            }
+		}
 		
 		finally {
 			connection.close();

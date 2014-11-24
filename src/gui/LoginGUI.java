@@ -6,8 +6,13 @@
 
 package gui;
 
+import client.PasswordHash;
 import client.ServerAdapter;
 import client.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -140,6 +145,7 @@ public class LoginGUI extends javax.swing.JFrame {
         // hackers need to encrypt this later
         char[] passwordCharArray = passwordField.getPassword();
         String password = new String(passwordCharArray);
+     
         User u = new User(username, password);
         if(!serverAdapt.authenticateUser(u)){   // if authentication fails
            
