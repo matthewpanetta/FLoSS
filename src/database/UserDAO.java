@@ -242,7 +242,7 @@ public class UserDAO {
 			result = statement.executeQuery();
                         result.next();
 			String key = result.getString(2);
-                        System.out.println(key);
+                       
 			
 			if(PasswordHash.validatePassword(user.getPassword(), key)){
                                 //PreparedStatement getPass = connection.getConnection().prepareStatement("SELECT  password FROM user WHERE username = ?;");

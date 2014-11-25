@@ -25,6 +25,7 @@ public class GetFileHandler {
 	
 	public void getFile(String userPath, String clientPath) throws MalformedURLException, IOException {
          URLConnection http = new URL(baseURL + userPath).openConnection();
+         System.out.println("HI");
 
          // Start copying!
          InputStream in = http.getInputStream();

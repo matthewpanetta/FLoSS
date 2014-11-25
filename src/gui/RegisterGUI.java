@@ -31,6 +31,7 @@ public class RegisterGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;  // will be singleton in the future 
     
     public RegisterGUI() {
+        
         initComponents();
         serverAdapt = new ServerAdapter();
     }
@@ -215,9 +216,7 @@ public class RegisterGUI extends javax.swing.JFrame {
             if(PasswordHash.validatePassword(credentials[2], credentials[1])) {
                 passwordsMatch = true;
             }
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeySpecException ex) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -233,7 +232,11 @@ public class RegisterGUI extends javax.swing.JFrame {
                     credentials[6], credentials[8], date);
             
             
-            serverAdapt.register(user);
+            try {
+                serverAdapt.register(user);
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+                Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_registerMouseClicked
 

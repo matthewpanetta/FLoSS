@@ -28,6 +28,9 @@ public class ServerAdapter {
 		fmf = FMFacade.getInstance();
 	}
 	
+        public File getFile(String filename, User u){
+            return dbf.getFile(u.getUserName(), filename);
+        }
 	public User searchUserDatabase(String username){
 		return null;
 	}
@@ -171,7 +174,9 @@ public class ServerAdapter {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		} else {
+                    System.out.println("LOL");
+                }
 	}
 	
 	public void retrieve(User user, String fileName) {

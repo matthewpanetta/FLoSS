@@ -147,12 +147,16 @@ public class LoginGUI extends javax.swing.JFrame {
         String password = new String(passwordCharArray);
      
         User u = new User(username, password);
-        if(!serverAdapt.authenticateUser(u)){   // if authentication fails
-           
-            JOptionPane.showMessageDialog(this, "Username or Password incorrect");
-        }
-        else {
-            JOptionPane.showMessageDialog(this, "Login Successful");
+        try {
+            if(!serverAdapt.authenticateUser(u)){   // if authentication fails
+                
+                JOptionPane.showMessageDialog(this, "Username or Password incorrect");
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Login Successful");
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }//GEN-LAST:event_loginButtonMouseClicked
