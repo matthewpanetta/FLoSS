@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -203,7 +205,6 @@ public class RegisterGUI extends javax.swing.JFrame {
         } catch (InvalidKeySpecException ex) {
             Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //credentials[1] = new String(password.getPassword());
         credentials[2] = new String(passwordConfirm.getPassword());
         credentials[3] = firstName.getText();
         credentials[4] = midInit.getText();
@@ -236,7 +237,14 @@ public class RegisterGUI extends javax.swing.JFrame {
             
             
             try {
-                serverAdapt.register(user);
+                if(serverAdapt.register(user)) {
+                	JOptionPane.showMessageDialog(this, "You have successfully registered!");
+                	LoginGUI logInGUI = new LoginGUI();
+                    logInGUI.setVisible(true);
+                    dispose();          /* closes this frame now that the GUI frame is up */
+                } else {
+                	JOptionPane.showMessageDialog(this, "Username already in use. Please select a different username.");
+                }
             } catch (NoSuchAlgorithmException ex) {
                 Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvalidKeySpecException ex) {
