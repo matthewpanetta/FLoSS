@@ -7,12 +7,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import client.PasswordHash;
 import client.User;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 /* UserDAO class:
  * 		DAO = Data Access Object, a Java EE design pattern for interacting with a database.
@@ -68,7 +72,11 @@ public class UserDAO {
 			statement.setDate(7, tempDate);
 			statement.setString(8, user.getEmail());
 			
-			statement.executeUpdate();
+			try {
+				statement.executeUpdate();
+			} catch (MySQLIntegrityConstraintViolationException e) {
+				return false;
+			}
 		}
 		
 		catch (SQLException e) {
