@@ -171,12 +171,15 @@ public class ServerAdapter {
 		}
 	}
 	
-	public void download(User u, String serverFilePath, String clientFilePath) {
+	public boolean download(User u, String serverFilePath, String clientFilePath) {
+		boolean result = false;
+		
 		int index = serverFilePath.lastIndexOf("/");
 		String fileName = serverFilePath.substring(index+1);
 		if(dbf.canAccess(u.getUserName(), fileName)) {
 			try {
 				fmf.download(serverFilePath, clientFilePath);
+				result = true;
 			}
 			catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -185,6 +188,8 @@ public class ServerAdapter {
 				e.printStackTrace();
 			}
 		}
+		
+		return result;
 	}
 	
 	public void retrieve(User user, String fileName) {
