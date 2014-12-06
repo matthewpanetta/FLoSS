@@ -17,7 +17,7 @@ import java.security.spec.InvalidKeySpecException;
  * 		This class contains many of the same methods as other classes in this package. Check those respective classes for info on those methods.
  * 		
  * 		+ boolean registerUser(User user)					: Will register a user and log them on.
- * 		+ List<File> getCollaborations(String userName)		: Will get all files that a user can access from other users. (Files in which the user is granted read/write access). 
+ * 		+ List<File> getCollaborations(String userName)		: Will get all files that a user can access from other users. (Files in which the user is granted read/write access, but does not own). 
  * 		+ List<File> getAllFiles(String userName)			: Will get all files that a user owns and has access to.
  */
 

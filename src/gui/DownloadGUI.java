@@ -9,13 +9,14 @@ package gui;
 import client.File;
 import client.ServerAdapter;
 import client.User;
+
 import java.awt.Desktop;
 import java.io.IOException;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
@@ -122,6 +123,13 @@ public class DownloadGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         refreshFileList();
+        
+        fileListDisplay.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = fileNames;
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(fileListDisplay);
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
@@ -136,6 +144,7 @@ public class DownloadGUI extends javax.swing.JFrame {
                 Desktop.getDesktop().open(file);
             } catch (IOException ex) {
                 Logger.getLogger(DownloadGUI.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Unable to open the file.\nThere may not be a default program for the filetype you want to open.");
             }
     }//GEN-LAST:event_jButton1MouseClicked
 
@@ -200,7 +209,7 @@ public class DownloadGUI extends javax.swing.JFrame {
 
             java.io.File clientFile = chooser.getSelectedFile();
             String clientPath = clientFile.getAbsolutePath();
-            pathToSave = toDownload.getFilePath() + "/" + toDownload.getFileName();
+            pathToSave = toDownload.getFilePath() + "//" + toDownload.getFileName();
 
             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
             int extensionIndex = pathToSave.lastIndexOf(".");
@@ -223,7 +232,7 @@ public class DownloadGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton downloadButton;
-    private javax.swing.JList fileListDisplay;
+    private javax.swing.JList<String> fileListDisplay;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
