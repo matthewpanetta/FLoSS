@@ -74,14 +74,12 @@ public class UploadGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void uploadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_uploadButtonMouseClicked
-                // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
+        // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
 		JFileChooser chooser = new JFileChooser();
 	
-                /// TESTING PURPOSES DUMMY USER 
-                User u = new User("mp755", "test123");
-               
-                
-                
+        // TESTING PURPOSES DUMMY USER 
+		User u = new User("mp755", "test123");
+   
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
 			"gif");
@@ -95,7 +93,7 @@ public class UploadGUI extends javax.swing.JFrame {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			java.io.File[] fileList = chooser.getSelectedFiles();
 			for(java.io.File f : fileList){
-				serverAdapt.upload(u, f.getPath(), u.getUserName()+"\\testDir");
+				serverAdapt.upload(u, f.getPath(), u.getUserName());
 				
 				JOptionPane.showMessageDialog(this, "File uploaded successfully!");
 				}
