@@ -9,10 +9,13 @@ package gui;
 import client.File;
 import client.ServerAdapter;
 import client.User;
+import java.awt.Desktop;
+import java.io.IOException;
 
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
@@ -49,10 +52,11 @@ public class DownloadGUI extends javax.swing.JFrame {
         refreshFileList();
         fileListDisplay = new javax.swing.JList();
         refreshButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        downloadButton.setText("download");
+        downloadButton.setText("Download");
         downloadButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downloadButtonActionPerformed(evt);
@@ -73,6 +77,13 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Download and Open");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -84,25 +95,49 @@ public class DownloadGUI extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(refreshButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(downloadButton)))
+                        .addComponent(downloadButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(downloadButton)
-                    .addComponent(refreshButton))
+                    .addComponent(refreshButton)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_END);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        // TODO add your handling code here:
+
+        refreshFileList();
+    }//GEN-LAST:event_refreshButtonActionPerformed
+
+    private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
+        downloadFile();
+    }//GEN-LAST:event_downloadButtonActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        String filePath = downloadFile();
+        java.io.File file = new java.io.File(filePath);
+        
+        try {
+                Desktop.getDesktop().open(file);
+            } catch (IOException ex) {
+                Logger.getLogger(DownloadGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }//GEN-LAST:event_jButton1MouseClicked
 
     private void refreshFileList(){
         
@@ -110,53 +145,11 @@ public class DownloadGUI extends javax.swing.JFrame {
         fileList = serverAdapt.getFileList("mp755");
       
         fileNames = new String[fileList.size()];
-    
-
         for(int i = 0; i < fileList.size(); i++){
             File f = fileList.get(i);
             fileNames[i] = f.getFileName();
         }
     }
-    private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
-        String pathToSave;
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
-			"gif");
-        chooser.setFileFilter(filter);
-        chooser.showSaveDialog(this);
-        
-        User u = new User("mp755", "test123");
-        List<String> selected = fileListDisplay.getSelectedValuesList();
-        for(int i = 0; i < selected.size(); i++){
-             File toDownload = serverAdapt.getFile(selected.get(i), u);
-             
-             java.io.File clientFile = chooser.getSelectedFile();
-             String clientPath = clientFile.getAbsolutePath();             
-             pathToSave = toDownload.getFilePath() + "/" + toDownload.getFileName();
-             
-             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
-             int extensionIndex = pathToSave.lastIndexOf(".");
-             String extension = pathToSave.substring(extensionIndex);
-             if(!clientPath.endsWith(extension)) {
-            	 clientPath += extension;
-             }
-             
-             if(serverAdapt.download(u, pathToSave, clientPath)) {
-            	 JOptionPane.showMessageDialog(this, "File successfully downloaded!");
-             }
-             
-             else {
-            	 JOptionPane.showMessageDialog(this, "Could not retrieve file. Please try again");
-             }
-         }
-    }//GEN-LAST:event_downloadButtonActionPerformed
-
-    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        // TODO add your handling code here:
-        
-        refreshFileList();
-    }//GEN-LAST:event_refreshButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -191,10 +184,47 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
     }
+    
+    public String downloadFile() {
+        String pathToSave;
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
+            "gif");
+        chooser.setFileFilter(filter);
+        chooser.showSaveDialog(this);
+
+        User u = new User("mp755", "test123");
+        List<String> selected = fileListDisplay.getSelectedValuesList();
+        for(int i = 0; i < selected.size(); i++){
+            File toDownload = serverAdapt.getFile(selected.get(i), u);
+
+            java.io.File clientFile = chooser.getSelectedFile();
+            String clientPath = clientFile.getAbsolutePath();
+            pathToSave = toDownload.getFilePath() + "/" + toDownload.getFileName();
+
+            // Get the file extension. If the user did not specify a file extension, add it onto the file name.
+            int extensionIndex = pathToSave.lastIndexOf(".");
+            String extension = pathToSave.substring(extensionIndex);
+            if(!clientPath.endsWith(extension)) {
+                clientPath += extension;
+            }
+
+            if(serverAdapt.download(u, pathToSave, clientPath)) {
+                JOptionPane.showMessageDialog(this, "File successfully downloaded!");
+            }
+
+            else {
+                JOptionPane.showMessageDialog(this, "Could not retrieve file. Please try again");
+            }
+            return clientPath;
+        }
+        return null;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton downloadButton;
-    private javax.swing.JList<String> fileListDisplay;
+    private javax.swing.JList fileListDisplay;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton refreshButton;
