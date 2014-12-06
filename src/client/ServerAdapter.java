@@ -178,6 +178,7 @@ public class ServerAdapter {
 		String fileName = serverFilePath.substring(index+1);
 		if(dbf.canAccess(u.getUserName(), fileName)) {
 			try {
+				serverFilePath = serverFilePath.replaceAll("\\s", "");
 				fmf.download(serverFilePath, clientFilePath);
 				result = true;
 			}
