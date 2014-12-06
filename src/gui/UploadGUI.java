@@ -9,7 +9,9 @@ package gui;
 import client.File;
 import client.ServerAdapter;
 import client.User;
+
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -92,11 +94,11 @@ public class UploadGUI extends javax.swing.JFrame {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			java.io.File[] fileList = chooser.getSelectedFiles();
-                        for(java.io.File f : fileList){
-                           // serverAdapt.upload(u, f.getPath(), u.getUserName());
-                            serverAdapt.upload(u, f.getPath(), u.getUserName()+"\\testDir");
-                           
-                        }
+			for(java.io.File f : fileList){
+				serverAdapt.upload(u, f.getPath(), u.getUserName()+"\\testDir");
+				
+				JOptionPane.showMessageDialog(this, "File uploaded successfully!");
+				}
 		}
     }//GEN-LAST:event_uploadButtonMouseClicked
 
