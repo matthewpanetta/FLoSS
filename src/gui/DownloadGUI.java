@@ -9,9 +9,12 @@ package gui;
 import client.File;
 import client.ServerAdapter;
 import client.User;
+
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -115,30 +118,36 @@ public class DownloadGUI extends javax.swing.JFrame {
         }
     }
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
-        // TODO add your handling code here:
-        // dummy user for testing purposes
-        
         String pathToSave;
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
 			"gif");
         chooser.setFileFilter(filter);
+        chooser.showSaveDialog(this);
         
-        
-        int returnVal = chooser.showSaveDialog(null);
-         User u = new User("mp755", "test123");
-         List<String> selected = fileListDisplay.getSelectedValuesList();
-         for(int i = 0; i < selected.size(); i++){
-             //System.out.println(selected.get(i));
-             // dummy username for testing pruposes
+        User u = new User("mp755", "test123");
+        List<String> selected = fileListDisplay.getSelectedValuesList();
+        for(int i = 0; i < selected.size(); i++){
              File toDownload = serverAdapt.getFile(selected.get(i), u);
              
              java.io.File clientFile = chooser.getSelectedFile();
-             String clientPath = clientFile.getAbsolutePath();
+             String clientPath = clientFile.getAbsolutePath();             
              pathToSave = toDownload.getFilePath() + "/" + toDownload.getFileName();
-             System.out.println(pathToSave);
              
-             serverAdapt.download(u, pathToSave, clientPath);
+             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
+             int extensionIndex = pathToSave.lastIndexOf(".");
+             String extension = pathToSave.substring(extensionIndex);
+             if(!clientPath.endsWith(extension)) {
+            	 clientPath += extension;
+             }
+             
+             if(serverAdapt.download(u, pathToSave, clientPath)) {
+            	 JOptionPane.showMessageDialog(this, "File successfully downloaded!");
+             }
+             
+             else {
+            	 JOptionPane.showMessageDialog(this, "Could not retrieve file. Please try again");
+             }
          }
     }//GEN-LAST:event_downloadButtonActionPerformed
 
@@ -185,7 +194,7 @@ public class DownloadGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton downloadButton;
-    private javax.swing.JList fileListDisplay;
+    private javax.swing.JList<String> fileListDisplay;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton refreshButton;
