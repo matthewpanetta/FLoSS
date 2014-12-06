@@ -27,11 +27,8 @@ public class DownloadGUI extends javax.swing.JFrame {
      * Creates new form DownloadGUI
      */
     public DownloadGUI() {
-        serverAdapt = new ServerAdapter();
-        initComponents();
-        // will soon be singletonned
-        
-                
+        serverAdapt = ServerAdapter.getInstance();
+        initComponents();        
     }
 
     /**

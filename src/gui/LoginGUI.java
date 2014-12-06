@@ -28,9 +28,7 @@ public class LoginGUI extends javax.swing.JFrame {
     ServerAdapter serverAdapt;
     public LoginGUI() {
         initComponents();
-        
-        // later this will be singletonned
-        serverAdapt = new ServerAdapter();
+        serverAdapt = ServerAdapter.getInstance();
     }
 
     /**
@@ -155,8 +153,10 @@ public class LoginGUI extends javax.swing.JFrame {
             else {
                 JOptionPane.showMessageDialog(this, "Login Successful");
             }
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+        	Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }//GEN-LAST:event_loginButtonMouseClicked

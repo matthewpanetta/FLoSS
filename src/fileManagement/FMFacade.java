@@ -34,7 +34,6 @@ public class FMFacade {
 	}
 	
 	public void download(String serverFilePath, String clientFilePath) throws MalformedURLException, IOException {
-            System.out.println("Hello");
 		gfh.getFile(serverFilePath, clientFilePath);
 	}
 	

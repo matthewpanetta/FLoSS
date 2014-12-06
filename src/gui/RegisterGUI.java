@@ -9,6 +9,7 @@ package gui;
 import client.PasswordHash;
 import client.ServerAdapter;
 import client.User;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
@@ -28,12 +29,12 @@ public class RegisterGUI extends javax.swing.JFrame {
     /**
      * Creates new form RegisterGUI
      */
-    private ServerAdapter serverAdapt;  // will be singleton in the future 
+    private ServerAdapter serverAdapt;
     
     public RegisterGUI() {
         
         initComponents();
-        serverAdapt = new ServerAdapter();
+        serverAdapt = ServerAdapter.getInstance();
     }
 
     /**
@@ -216,8 +217,10 @@ public class RegisterGUI extends javax.swing.JFrame {
             if(PasswordHash.validatePassword(credentials[2], credentials[1])) {
                 passwordsMatch = true;
             }
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+        	Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if(passwordsMatch) {
@@ -234,8 +237,10 @@ public class RegisterGUI extends javax.swing.JFrame {
             
             try {
                 serverAdapt.register(user);
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            } catch (NoSuchAlgorithmException ex) {
                 Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeySpecException ex) {
+            	Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_registerMouseClicked

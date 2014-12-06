@@ -24,9 +24,8 @@ public class UploadGUI extends javax.swing.JFrame {
      * Creates new form UploadGUI
      */
     public UploadGUI() {
+        serverAdapt = ServerAdapter.getInstance();
         initComponents();
-        // soon to be singletoned
-        serverAdapt = new ServerAdapter();
     }
 
     /**
@@ -96,6 +95,7 @@ public class UploadGUI extends javax.swing.JFrame {
                         for(java.io.File f : fileList){
                            // serverAdapt.upload(u, f.getPath(), u.getUserName());
                             serverAdapt.upload(u, f.getPath(), u.getUserName()+"\\testDir");
+                           
                         }
 		}
     }//GEN-LAST:event_uploadButtonMouseClicked

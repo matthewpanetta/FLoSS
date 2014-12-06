@@ -22,15 +22,25 @@ import java.security.spec.InvalidKeySpecException;
 public class ServerAdapter {
 	private DBFacade dbf;
 	private FMFacade fmf;
+	private static ServerAdapter instance = null;
 	
-	public ServerAdapter() {
+	private ServerAdapter() {
 		dbf = DBFacade.getInstance();
 		fmf = FMFacade.getInstance();
 	}
 	
-        public File getFile(String filename, User u){
-            return dbf.getFile(u.getUserName(), filename);
-        }
+	public static ServerAdapter getInstance() {
+		if(instance == null) {
+			instance = new ServerAdapter();
+		}
+		
+		return instance;
+	}
+	
+	public File getFile(String filename, User u){
+		return dbf.getFile(u.getUserName(), filename);
+    }
+	
 	public User searchUserDatabase(String username){
 		return null;
 	}
@@ -162,8 +172,8 @@ public class ServerAdapter {
 	}
 	
 	public void download(User u, String serverFilePath, String clientFilePath) {
-		int index = clientFilePath.lastIndexOf("\\");
-		String fileName = clientFilePath.substring(index+1);
+		int index = serverFilePath.lastIndexOf("/");
+		String fileName = serverFilePath.substring(index+1);
 		if(dbf.canAccess(u.getUserName(), fileName)) {
 			try {
 				fmf.download(serverFilePath, clientFilePath);
@@ -174,9 +184,7 @@ public class ServerAdapter {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else {
-                    System.out.println("LOL");
-                }
+		}
 	}
 	
 	public void retrieve(User user, String fileName) {

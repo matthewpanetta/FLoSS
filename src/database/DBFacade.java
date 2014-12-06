@@ -234,7 +234,10 @@ public class DBFacade {
 		
 		for(Permission p : permList) {
 			File f = fid.getFile(p.getFileID());
-			fileList.add(f);
+			
+			if(!(f.getOwner().equals(userName))) {
+				fileList.add(f);	
+			}
 		}
 		
 		return fileList;
