@@ -135,7 +135,7 @@ public class ChangePasswordGUI extends javax.swing.JFrame {
         // verify that username and password allows for appropriate login
         char[] passwordCharArray = currentPasswordField.getPassword();
         String password = new String(passwordCharArray);
-        
+        String newPassword = null;
         User u = new User(username, password);
         try {
             if(!serverAdapt.authenticateUser(u)){   // if authentication fails                
@@ -152,7 +152,7 @@ public class ChangePasswordGUI extends javax.swing.JFrame {
         try {
             password = PasswordHash.createHash(newPasswordField.getPassword());            
             char[] newPasswordCharArray = newPasswordConfirmField.getPassword();
-            String newPassword = new String(newPasswordCharArray);
+            newPassword = new String(newPasswordCharArray);
              if(PasswordHash.validatePassword(newPassword, password)) {
                 passwordsMatch = true;                
             }
@@ -165,7 +165,10 @@ public class ChangePasswordGUI extends javax.swing.JFrame {
         
         if(passwordsMatch){
             // do stuff for updating the password
-            
+            // need to call a serverAdapt that updates the user stuff
+            User user = serverAdapt.getUser(username);
+            user.setPassword(newPassword);                      // user instance now has password of newPassword
+            serverAdapt.updateUser(user);
         }
         else{
             JOptionPane.showMessageDialog(this, "new passwords do not match bro!");

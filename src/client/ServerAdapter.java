@@ -170,7 +170,10 @@ public class ServerAdapter {
 			}
 		}
 	}
-	
+	public User getUser(String username){
+            User u = dbf.getUser(username);
+            return u;
+        }
 	public boolean download(User u, String serverFilePath, String clientFilePath) {
 		boolean result = false;
 		
@@ -197,7 +200,9 @@ public class ServerAdapter {
 		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName);
 		upload(user, "C:\\temp\\"+ fileName, user.getUserName());
 	}
-	
+	public void updateUser(User u){
+            dbf.updateUser(u);
+        }
 	public static void main(String[] args) {
 		User u = new User("mp755", "test123");
 		String clientFilePath = "C:\\Users\\mp755\\Documents\\ugates.docx";

@@ -192,13 +192,13 @@ public class UserDAO {
 		return userList;
 	}
 	
-	public boolean update(User user) {
+	public boolean update(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		try {
 			java.sql.Date tempDate = new java.sql.Date(user.getBirthDate().getTime());
 			connection.connect();
 			statement = connection.getConnection().prepareStatement("UPDATE user SET userName = ?, password = ?, firstName = ?, middleInitial = ?, lastName = ?, gender = ?, birthDate = ?, email = ? WHERE userName LIKE(?);");
 			statement.setString(1, user.getUserName());
-			statement.setString(2, user.getPassword());
+			statement.setString(2, PasswordHash.createHash(user.getPassword()));
 			statement.setString(3, user.getFirstName());
 			statement.setString(4, user.getMiddleInitial());
 			statement.setString(5, user.getLastName());
