@@ -43,11 +43,29 @@ public class ServerAdapter {
         
         public boolean deleteFile(File file){
             boolean deleted = false;
-         //   if(fmf.delete(file) && dbf.deleteFile(file))
             
-                deleted = dbf.deleteFile(file);
+            if(fmf.deleteFile(file.getFilePath() + "\\" + file.getFileName()) && dbf.deleteFile(file)) {
+                deleted = true;
+            }
             
             return deleted;
+        }
+        
+        public boolean renameFile(String userName, File file, String newFilePath) {
+            boolean renamed = false;
+            
+            // Get the file extension. If the user did not specify a file extension, add it onto the file name.
+            int extensionIndex = file.getFileName().lastIndexOf(".");
+            String extension = file.getFileName().substring(extensionIndex);
+            if(!newFilePath.endsWith(extension)) {
+                newFilePath += extension;
+            }
+            
+            if(dbf.updateFileName(userName, file.getFileName(), newFilePath) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath)) {
+                renamed = true;
+            }
+            
+            return renamed;
         }
 	
 	public User searchUserDatabase(String username){

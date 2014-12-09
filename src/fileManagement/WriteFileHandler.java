@@ -58,27 +58,6 @@ public class WriteFileHandler {
 		return fileName;
 	}
 	
-	/*public File[] getFiles() {
-		// Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
-		JFileChooser chooser = new JFileChooser();
-	
-		// Restrict the user to certain file formats
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
-			"gif");
-		
-		chooser.setFileFilter(filter);
-		
-		// Allow the user to upload multiple files.
-		chooser.setMultiSelectionEnabled(true);
-		
-		int returnVal = chooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFiles();
-		}
-		
-		return null;
-	}*/
-	
 	private void writeToOutput(ServerConnection c, File f) throws IOException {
 		OutputStream os = c.getConnection().getOutputStream();
 		FileInputStream fis = new FileInputStream(f);

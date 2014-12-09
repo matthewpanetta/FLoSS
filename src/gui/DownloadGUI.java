@@ -35,7 +35,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
         initComponents();
-        user = new User("geneMyNigga", "test123");
+        user = new User("mp755", "test123");
     }
 
     /**
@@ -56,6 +56,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         viewPermButton = new javax.swing.JButton();
+        renameButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -101,21 +102,32 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        renameButton.setText("Rename");
+        renameButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                renameButtonMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 762, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(refreshButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(viewPermButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(renameButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(downloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
@@ -131,7 +143,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(refreshButton)
                         .addComponent(deleteButton)
-                        .addComponent(viewPermButton))
+                        .addComponent(viewPermButton)
+                        .addComponent(renameButton))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton1)
                         .addComponent(downloadButton)))
@@ -198,10 +211,32 @@ public class DownloadGUI extends javax.swing.JFrame {
         viewPermGUI.setVisible(true);
     }//GEN-LAST:event_viewPermButtonMouseClicked
 
+    private void renameButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_renameButtonMouseClicked
+        List<String> fileNames = fileListDisplay.getSelectedValuesList();
+        
+        int fileID = 0;
+        
+        List<client.File> collabs = serverAdapt.getAllFiles(user.getUserName());
+        
+        client.File theFile = null;
+        
+        for(client.File f : collabs) {
+            if(f.getFileName().equals(fileNames.get(0))) {
+                theFile = f;
+            }
+        }
+                
+        RenameFileGUI renameFileGUI = new RenameFileGUI();
+        renameFileGUI.setUser(user.getUserName());
+        renameFileGUI.setOldFileName(fileNames.get(0));
+        renameFileGUI.setFile(theFile);
+        renameFileGUI.setVisible(true);
+    }//GEN-LAST:event_renameButtonMouseClicked
+
     private void refreshFileList(){
         
         // getFileList takes a string (the username) so just for testing we send it "mp755"
-        fileList = serverAdapt.getFileList("geneMyNigga");
+        fileList = serverAdapt.getFileList("mp755");
       
         fileNames = new String[fileList.size()];
         for(int i = 0; i < fileList.size(); i++){
@@ -245,7 +280,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     }
     
     public void deleteFile(){
-        User u = new User("geneMyNigga", "asdf");
+        User u = new User("mp755", "test123");
         List<String> selected = fileListDisplay.getSelectedValuesList();
         for(int i = 0; i < selected.size(); i++){
             File toDelete = serverAdapt.getFile(selected.get(i), u);
@@ -265,7 +300,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         chooser.setFileFilter(filter);
         chooser.showSaveDialog(this);
 
-        User u = new User("geneMyNigga", "asdf");
+        User u = new User("mp755", "test123");
         List<String> selected = fileListDisplay.getSelectedValuesList();
         for(int i = 0; i < selected.size(); i++){
             File toDownload = serverAdapt.getFile(selected.get(i), u);
@@ -301,6 +336,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JButton renameButton;
     private javax.swing.JButton viewPermButton;
     // End of variables declaration//GEN-END:variables
 }
