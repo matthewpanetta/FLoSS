@@ -22,6 +22,7 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
     private List<Permission> permissionList;
     private String[] friendsNames;
     private ServerAdapter serverAdapt;
+    private client.File file;
 
     /**
      * Creates new form ViewPermissionGUI
@@ -34,6 +35,11 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
     public void getPermissions() {
         refreshPermissions();
         refreshPermissionsList();
+        
+        if(!(file.getOwner().equals(user.getUserName()))) {
+            addPermButton.setEnabled(false);
+            removePermButton.setEnabled(false);
+        }
     }
     
     public void setUser(User user) {
@@ -42,6 +48,10 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
     
     public void setFileID(int fileID) {
         this.fileID = fileID;
+    }
+    
+    public void setFile(client.File file) {
+        this.file = file;
     }
     
     public void refreshPermissions() {

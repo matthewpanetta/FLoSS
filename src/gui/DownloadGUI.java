@@ -35,7 +35,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
         initComponents();
-        user = new User("mp755", "test123");
+        user = new User("geneMyNigga", "test123");
     }
 
     /**
@@ -180,13 +180,20 @@ public class DownloadGUI extends javax.swing.JFrame {
         List<String> fileNames = fileListDisplay.getSelectedValuesList();
         int fileID = 0;
         
+        List<client.File> collabs = serverAdapt.getAllFiles(user.getUserName());
         
-        client.File file = serverAdapt.getFile(fileNames.get(0), user);
-        fileID = file.getFileID();
+        client.File theFile = null;
+        
+        for(client.File f : collabs) {
+            if(f.getFileName().equals(fileNames.get(0))) {
+                theFile = f;
+            }
+        }
         
         ViewPermissionGUI viewPermGUI = new ViewPermissionGUI();
         viewPermGUI.setUser(user);
-        viewPermGUI.setFileID(fileID);
+        viewPermGUI.setFileID(theFile.getFileID());
+        viewPermGUI.setFile(theFile);
         viewPermGUI.getPermissions();
         viewPermGUI.setVisible(true);
     }//GEN-LAST:event_viewPermButtonMouseClicked
@@ -194,7 +201,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     private void refreshFileList(){
         
         // getFileList takes a string (the username) so just for testing we send it "mp755"
-        fileList = serverAdapt.getFileList("mp755");
+        fileList = serverAdapt.getFileList("geneMyNigga");
       
         fileNames = new String[fileList.size()];
         for(int i = 0; i < fileList.size(); i++){
@@ -238,7 +245,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     }
     
     public void deleteFile(){
-        User u = new User("mp755", "test123");
+        User u = new User("geneMyNigga", "asdf");
         List<String> selected = fileListDisplay.getSelectedValuesList();
         for(int i = 0; i < selected.size(); i++){
             File toDelete = serverAdapt.getFile(selected.get(i), u);
@@ -258,7 +265,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         chooser.setFileFilter(filter);
         chooser.showSaveDialog(this);
 
-        User u = new User("mp755", "test123");
+        User u = new User("geneMyNigga", "asdf");
         List<String> selected = fileListDisplay.getSelectedValuesList();
         for(int i = 0; i < selected.size(); i++){
             File toDownload = serverAdapt.getFile(selected.get(i), u);

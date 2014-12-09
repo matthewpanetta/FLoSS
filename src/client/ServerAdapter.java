@@ -69,6 +69,14 @@ public class ServerAdapter {
         public List<Permission> getPermissionsList(int fileID) {
             return dbf.getCollaboratorList(fileID);
         }
+        
+        public List<File> getCollaborations(String userName) {
+            return dbf.getCollaborations(userName);
+        }
+        
+        public List<File> getAllFiles(String userName) {
+            return dbf.getAllFiles(userName);
+        }
 	
 	public void createUser(){
 		
@@ -89,6 +97,10 @@ public class ServerAdapter {
 	public boolean removePermission(Permission p){
             return dbf.removePermission(p);
 	}
+        
+        public boolean isOwner(String userName, int fileID) {
+            return dbf.isOwner(userName, fileID);
+        }
 	
 	public void verifyFile(File f){
 		

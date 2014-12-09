@@ -21,7 +21,10 @@ import client.File;
  * 			-FILE object with everything generated.
  * 
  * 		+ File getFile(int fileID)							: Will do the same as above
- * 
+ *
+ *              + boolean isOwner(String userName, int fileID)                  : Checks if a user is the owner of a file.
+ *                      -TRUE if userName is owner, FALSE if not owner.
+ *
  * 		+ List<File> getFileList(String userName)			: Will retrieve every file entry for one specified user.
  * 			-ARRAYLIST of File objects, with everything generated.
  * 
@@ -175,6 +178,47 @@ public class FileDAO {
 		
 		return file;
 	}
+        
+        public boolean isOwner(String userName, int fileID) {
+            boolean isOwner = false;
+            
+            try {
+			connection.connect();
+			statement = connection.getConnection().prepareStatement("SELECT owner FROM file WHERE fileID = ?;");
+			statement.setInt(1, fileID);
+			result = statement.executeQuery();
+                        
+                        result.next();
+			
+			String owner = result.getString("owner");
+                        
+                        if(owner.equals(userName)) {
+                            isOwner = true;
+                        }
+		}
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		finally {
+			connection.close();
+			try {
+				if(statement != null) {
+					statement.close();
+				}
+				
+				if(result != null) {
+					result.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return isOwner;
+        }
 	
 	public List<File> getFileList(String userName) {
 		List<File> fileList = new ArrayList<File>();

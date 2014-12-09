@@ -169,6 +169,12 @@ public class DBFacade {
 		
 		return file;
 	}
+        
+        public boolean isOwner(String userName, int fileID) {
+                boolean isOwner = fid.isOwner(userName, fileID);
+                
+                return isOwner;
+        }
 	
 	public boolean updateTimestamp(String userName, String fileName) {
 		boolean isUpdated = fid.updateTimestamp(userName, fileName);
