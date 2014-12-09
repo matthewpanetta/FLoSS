@@ -92,12 +92,18 @@ public class UploadGUI extends javax.swing.JFrame {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			java.io.File[] fileList = chooser.getSelectedFiles();
-			for(java.io.File f : fileList){
+			for(java.io.File f : fileList){                       
 				serverAdapt.upload(u, f.getPath(), u.getUserName());
-				
+                                
+                                client.File theFile = serverAdapt.getFile(f.getName(), u);
+                                AddPermissionGUI addPermGUI = new AddPermissionGUI();
+                                addPermGUI.addUser(u);
+                                addPermGUI.addFileID(theFile.getFileID());
+                                addPermGUI.setVisible(true);
+                                
 				JOptionPane.showMessageDialog(this, "File uploaded successfully!");
-				}
-		}
+                        }
+                }
     }//GEN-LAST:event_uploadButtonMouseClicked
 
     /**

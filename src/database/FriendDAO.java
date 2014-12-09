@@ -32,11 +32,21 @@ public class FriendDAO {
 	public boolean create(User user, User friend) {
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("INSERT INTO friend (userName, friendName) VALUES(?,?);");
-			statement.setString(1, user.getUserName());
-			statement.setString(2, friend.getUserName());
+                        statement = connection.getConnection().prepareStatement("SELECT * FROM friend WHERE userName = ? AND friendName = ?");
+                        statement.setString(1, user.getUserName());
+                        statement.setString(2, friend.getUserName());
+                        
+                        result = statement.executeQuery();
+                        
+                        if(!result.isBeforeFirst()) {
+                            statement = connection.getConnection().prepareStatement("INSERT INTO friend (userName, friendName) VALUES(?,?);");
+                            statement.setString(1, user.getUserName());
+                            statement.setString(2, friend.getUserName());
 			
-			statement.executeUpdate();
+                            statement.executeUpdate();
+                        } else {
+                            return false;
+                        }
 		}
 		
 		catch (SQLException e) {

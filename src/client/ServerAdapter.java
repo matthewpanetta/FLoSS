@@ -39,11 +39,36 @@ public class ServerAdapter {
 	
 	public File getFile(String filename, User u){
 		return dbf.getFile(u.getUserName(), filename);
-    }
+        }
+        
+        public boolean deleteFile(File file){
+            boolean deleted = false;
+         //   if(fmf.delete(file) && dbf.deleteFile(file))
+            
+                deleted = dbf.deleteFile(file);
+            
+            return deleted;
+        }
 	
 	public User searchUserDatabase(String username){
 		return null;
 	}
+        
+        public boolean addFriend(User user, User friend) {
+            return dbf.addFriend(user, friend);
+        }
+        
+        public boolean removeFriend(User user, User friend) {
+            return dbf.deleteFriend(user, friend);
+        }
+        
+        public List<User> getFriends(User user) {
+            return dbf.getFriends(user);
+        }
+        
+        public List<Permission> getPermissionsList(int fileID) {
+            return dbf.getCollaboratorList(fileID);
+        }
 	
 	public void createUser(){
 		
@@ -57,12 +82,12 @@ public class ServerAdapter {
 		
 	}
 	
-	public void addPermission(User u, Permission p){
-		
+	public boolean addPermission(Permission p){
+            return dbf.addPermission(p);
 	}
 	
-	public void removePermission(User u, Permission p){
-		
+	public boolean removePermission(Permission p){
+            return dbf.removePermission(p);
 	}
 	
 	public void verifyFile(File f){

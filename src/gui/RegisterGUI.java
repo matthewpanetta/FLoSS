@@ -195,6 +195,8 @@ public class RegisterGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_registerActionPerformed
 
     private void registerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerMouseClicked
+        JOptionPane.showMessageDialog(this, "Registering...Please Wait.");
+        
         Date date = null;
         String[] credentials = new String[9];
         credentials[0] = userName.getText();

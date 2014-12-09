@@ -8,6 +8,8 @@ import client.Permission;
 import client.User;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /* Database Facade class
  * 		This class wraps all functionality in the database package in one class.
  * 		Any class outside of the database package should associate only with this class.
@@ -86,7 +88,14 @@ public class DBFacade {
 	}
 	
 	public boolean updateUser(User user) {
-		boolean userChanged = ud.update(user);
+		boolean userChanged = false;
+            try {
+                userChanged = ud.update(user);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(DBFacade.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeySpecException ex) {
+                Logger.getLogger(DBFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
 		
 		return userChanged;
 	}
@@ -227,6 +236,12 @@ public class DBFacade {
 		
 		return accessList;
 	}
+        
+        public List<Permission> getCollaboratorList(int fileID) {
+                List<Permission> collabList = pd.getCollaboratorList(fileID);
+                
+                return collabList;
+        }
 	
 	public List<File> getCollaborations(String userName) {
 		List<Permission> permList = getAccessList(userName);

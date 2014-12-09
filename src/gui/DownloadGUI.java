@@ -12,14 +12,12 @@ import client.User;
 
 import java.awt.Desktop;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -27,15 +25,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author mdp5280
  */
 public class DownloadGUI extends javax.swing.JFrame {
-    ServerAdapter serverAdapt;
-    List<File> fileList;
-    String[] fileNames;
+    private ServerAdapter serverAdapt;
+    private List<File> fileList;
+    private String[] fileNames;
+    private User user;
     /**
      * Creates new form DownloadGUI
      */
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
-        initComponents();        
+        initComponents();
+        user = new User("mp755", "test123");
     }
 
     /**
@@ -54,6 +54,8 @@ public class DownloadGUI extends javax.swing.JFrame {
         fileListDisplay = new javax.swing.JList();
         refreshButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
+        viewPermButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,32 +87,54 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        deleteButton.setText("Delete");
+        deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteButtonMouseClicked(evt);
+            }
+        });
+
+        viewPermButton.setText("View Permissions");
+        viewPermButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewPermButtonMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(refreshButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewPermButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                         .addComponent(downloadButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(downloadButton)
-                    .addComponent(refreshButton)
-                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(refreshButton)
+                        .addComponent(deleteButton)
+                        .addComponent(viewPermButton))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1)
+                        .addComponent(downloadButton)))
                 .addContainerGap())
         );
 
@@ -147,6 +171,25 @@ public class DownloadGUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Unable to open the file.\nThere may not be a default program for the filetype you want to open.");
             }
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void deleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteButtonMouseClicked
+        deleteFile();
+    }//GEN-LAST:event_deleteButtonMouseClicked
+
+    private void viewPermButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewPermButtonMouseClicked
+        List<String> fileNames = fileListDisplay.getSelectedValuesList();
+        int fileID = 0;
+        
+        
+        client.File file = serverAdapt.getFile(fileNames.get(0), user);
+        fileID = file.getFileID();
+        
+        ViewPermissionGUI viewPermGUI = new ViewPermissionGUI();
+        viewPermGUI.setUser(user);
+        viewPermGUI.setFileID(fileID);
+        viewPermGUI.getPermissions();
+        viewPermGUI.setVisible(true);
+    }//GEN-LAST:event_viewPermButtonMouseClicked
 
     private void refreshFileList(){
         
@@ -194,6 +237,19 @@ public class DownloadGUI extends javax.swing.JFrame {
         });
     }
     
+    public void deleteFile(){
+        User u = new User("mp755", "test123");
+        List<String> selected = fileListDisplay.getSelectedValuesList();
+        for(int i = 0; i < selected.size(); i++){
+            File toDelete = serverAdapt.getFile(selected.get(i), u);
+            boolean deletedFile = serverAdapt.deleteFile(toDelete);
+            if(deletedFile){
+                JOptionPane.showMessageDialog(this, "File deleted!");
+                
+            }
+        }
+    }
+    
     public String downloadFile() {
         String pathToSave;
         JFileChooser chooser = new JFileChooser();
@@ -231,11 +287,13 @@ public class DownloadGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton deleteButton;
     private javax.swing.JButton downloadButton;
-    private javax.swing.JList<String> fileListDisplay;
+    private javax.swing.JList fileListDisplay;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JButton viewPermButton;
     // End of variables declaration//GEN-END:variables
 }

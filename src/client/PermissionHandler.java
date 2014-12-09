@@ -6,13 +6,13 @@ public class PermissionHandler extends Handler{
 	public void addPermission(User owner, User friend, String fileName, String type){
 		// Give a user read permission to a file.
 		//permission = new Permission('r');
-		super.getDatabaseAdapter().addPermission(owner, permission);
+		super.getDatabaseAdapter().addPermission(permission);
 		
 	}
 	public void removePermission(User owner, User friend, String fileName, String type){
 		// Remove the read permission from the file for a specific user.
 		//permission = new Permission('d');
-		super.getDatabaseAdapter().removePermission(owner, permission);
+		super.getDatabaseAdapter().removePermission(permission);
 		
 	}
 	public void addOwner(User owner){
