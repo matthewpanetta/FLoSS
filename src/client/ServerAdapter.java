@@ -45,6 +45,22 @@ public class ServerAdapter {
             boolean deleted = false;
             
             if(fmf.deleteFile(file.getFilePath() + "\\" + file.getFileName()) && dbf.deleteFile(file)) {
+                int mostRecentVersion = file.getUpdateNum() - 1;
+                
+                String oldFilePath = "temp\\" + file.getFilePath() + "\\" + file.getFileName() + "_" + mostRecentVersion;
+                String newFilePath = oldFilePath.substring(0, oldFilePath.length() - 1);
+                newFilePath += "0";
+                
+                fmf.renameFile(oldFilePath, newFilePath, 1, 1);
+                
+                if(file.getUpdateNum() > 3) {
+                    for(int i = (file.getUpdateNum() - 3); i < (file.getUpdateNum() - 1); i++) {
+                        fmf.deleteFile("temp\\" + file.getFilePath() + "\\" + file.getFileName() + "_" + i);
+                    }
+                } else if(file.getUpdateNum() == 3) {
+                    fmf.deleteFile("temp\\" + file.getFilePath() + "\\" + file.getFileName() + "_" + 1);
+                }
+                
                 deleted = true;
             }
             
@@ -61,7 +77,8 @@ public class ServerAdapter {
                 newFilePath += extension;
             }
             
-            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, 0)) {
+            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) 
+                    && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, file.getUpdateNum(), 0)) {
                 renamed = true;
             }
             

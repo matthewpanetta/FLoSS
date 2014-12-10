@@ -64,14 +64,18 @@ public class FMFacade {
             return deleted;
         }
         
-        public boolean renameFile(String oldFilePath, String newFilePath, int flag) {
+        public boolean renameFile(String oldFilePath, String newFilePath, int updateNum, int flag) {
             boolean renamed = false;
             
             try {
                 renamed = rfh.renameFile(oldFilePath, newFilePath, 1);
                 
                 if(flag == 0) {
-                    renamed = rfh.renameFile("temp\\" + oldFilePath, "temp\\" + newFilePath, 1);
+                    for(int i = (updateNum - 3); i < updateNum; i++) {
+                        rfh.renameFile("temp\\" + oldFilePath + "_" + i, "temp\\" + newFilePath + "_" + i, 1);
+                    }
+                    
+                    rfh.renameFile("temp\\" + oldFilePath + "_" + 0, "temp\\" + newFilePath + "_" + 0, 1);
                 }
             } catch(IOException e) {
                 Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
@@ -84,7 +88,7 @@ public class FMFacade {
             boolean recovered = false;
             
             try {
-                recovered = rfh.renameAndCopyFile("temp\\" + filePath, filePath);
+                recovered = rfh.renameAndCopyFile("temp\\" + filePath + "_0", filePath);
                 
             } catch(IOException e) {
                 Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);

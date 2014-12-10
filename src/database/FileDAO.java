@@ -327,13 +327,14 @@ public class FileDAO {
 			result = statement.executeQuery();
                         result.next();
 			
-			statement = connection.getConnection().prepareStatement("INSERT INTO file (fileID, owner, fileName, filePath, dateLastModified, dateUploaded) VALUES(?,?,?,?,?,?)");
+			statement = connection.getConnection().prepareStatement("INSERT INTO file (fileID, owner, lastModifiedBy, fileName, filePath, dateLastModified, dateUploaded) VALUES(?,?,?,?,?,?,?)");
 			statement.setInt(1, result.getInt("fileID"));
 			statement.setString(2, result.getString("owner"));
-			statement.setString(3, result.getString("fileName"));
-                        statement.setString(4, result.getString("filePath"));
-                        statement.setTimestamp(5, result.getTimestamp("dateLastModified"));
-                        statement.setTimestamp(6, result.getTimestamp("dateUploaded"));              
+                        statement.setString(3, result.getString("lastModifiedBy"));
+			statement.setString(4, result.getString("fileName"));
+                        statement.setString(5, result.getString("filePath"));
+                        statement.setTimestamp(6, result.getTimestamp("dateLastModified"));
+                        statement.setTimestamp(7, result.getTimestamp("dateUploaded"));              
 			
 			statement.executeUpdate();
                         
