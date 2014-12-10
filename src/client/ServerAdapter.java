@@ -66,7 +66,7 @@ public class ServerAdapter {
                 newFilePath += extension;
             }
             
-            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, flag)) {
+            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, flag)) {
                 renamed = true;
             }
             

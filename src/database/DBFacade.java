@@ -194,8 +194,8 @@ public class DBFacade {
 		return isUpdated;
 	}
 	
-	public boolean updateFileName(String userName, String oldName, String newName) {
-		boolean isChanged = fid.updateFileName(userName, oldName, newName);
+	public boolean updateFileName(String userName, String oldName, String newName, String modifiedName) {
+		boolean isChanged = fid.updateFileName(userName, oldName, newName, modifiedName);
 		
 		return isChanged;
 	}

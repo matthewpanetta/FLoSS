@@ -54,11 +54,12 @@ public class FileDAO {
 	public boolean create(File file) {
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("INSERT INTO file (owner, fileName, filePath) VALUES(?,?,?);");
+			statement = connection.getConnection().prepareStatement("INSERT INTO file (owner, fileName, filePath, lastModifiedBy) VALUES(?,?,?,?);");
 			
 			statement.setString(1, file.getOwner());
 			statement.setString(2, file.getFileName());
 			statement.setString(3, file.getFilePath());
+                        statement.setString(4, file.getOwner());
 			
 			statement.executeUpdate();
 		}
@@ -363,22 +364,24 @@ public class FileDAO {
 		return isRecovered;
         }
         
-        public boolean updateTimestamp(String userName, String fileName) {
+        public boolean updateTimestamp(String userName, String fileName, String modifiedName) {
 		boolean isUpdated;
 		
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName + "u");
-			statement.setString(2, userName);
-			statement.setString(3, fileName);
+                        statement.setString(2, modifiedName);
+			statement.setString(3, userName);
+			statement.setString(4, fileName);
 			
 			statement.executeUpdate();
 			
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName);
-			statement.setString(2, userName);
-			statement.setString(3, fileName + "u");
+                        statement.setString(2, modifiedName);
+			statement.setString(3, userName);
+			statement.setString(4, fileName + "u");
 			
 			statement.executeUpdate();
 			isUpdated = true;
@@ -406,15 +409,16 @@ public class FileDAO {
 		return isUpdated;
 	}
 	
-	public boolean updateFileName(String userName, String oldFileName, String newFileName) {
+	public boolean updateFileName(String userName, String oldFileName, String newFileName, String modifiedName) {
 		boolean isUpdated;
 		
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, newFileName);
-			statement.setString(2, userName);
-			statement.setString(3, oldFileName);
+                        statement.setString(2, modifiedName);
+			statement.setString(3, userName);
+			statement.setString(4, oldFileName);
 			
 			statement.executeUpdate();
 			isUpdated = true;
