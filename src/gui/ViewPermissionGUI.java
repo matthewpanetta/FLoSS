@@ -162,6 +162,8 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
         AddPermissionGUI addPermGUI = new AddPermissionGUI();
         addPermGUI.addUser(user);
         addPermGUI.addFileID(fileID);
+        addPermGUI.refreshFriends();
+        addPermGUI.refreshFriendsList();
         addPermGUI.setVisible(true);
     }//GEN-LAST:event_addPermButtonMouseClicked
 

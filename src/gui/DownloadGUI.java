@@ -34,7 +34,7 @@ public class DownloadGUI extends javax.swing.JFrame {
      */
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
-        user = new User("martino", "test123");
+        user = new User("mp755", "test123");
         initComponents();
     }
 
@@ -58,6 +58,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         viewPermButton = new javax.swing.JButton();
         renameButton = new javax.swing.JButton();
         recoverFilesButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -117,6 +118,13 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        updateButton.setText("Update");
+        updateButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updateButtonMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -137,6 +145,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(renameButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(recoverFilesButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(updateButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(downloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -155,7 +165,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(deleteButton)
                         .addComponent(viewPermButton)
                         .addComponent(renameButton)
-                        .addComponent(recoverFilesButton))
+                        .addComponent(recoverFilesButton)
+                        .addComponent(updateButton))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton1)
                         .addComponent(downloadButton)))
@@ -250,6 +261,53 @@ public class DownloadGUI extends javax.swing.JFrame {
         recoverFileGUI.refreshFileList();
         recoverFileGUI.setVisible(true);        
     }//GEN-LAST:event_recoverFilesButtonMouseClicked
+
+    private void updateButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateButtonMouseClicked
+            List<String> fileNames = fileListDisplay.getSelectedValuesList();
+            String owner = user.getUserName();
+            
+            for(String fileName : fileNames) {
+                for(File f : fileList) {
+                    if(f.getFileName().equals(fileName)) {
+                        owner = f.getOwner();
+                    }
+                }
+                // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
+		JFileChooser chooser = new JFileChooser();
+   
+		// Restrict the user to certain file formats
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
+			"gif");
+		
+		chooser.setFileFilter(filter);
+		
+		// Allow the user to upload multiple files.
+		chooser.setMultiSelectionEnabled(true);
+		
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			java.io.File[] fileList = chooser.getSelectedFiles();
+			for(java.io.File f : fileList){
+                                String filePath = f.getPath();
+                                int index = filePath.lastIndexOf("\\");
+                                String modFilePath = filePath.replace(filePath.substring(index+1), fileName);
+                                
+                                java.io.File file = new java.io.File(modFilePath);
+                                if(f.renameTo(file)) {
+                                    serverAdapt.reupload(user, modFilePath, owner, fileName);
+                                    JOptionPane.showMessageDialog(this, "File updated successfully!");                                  
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "Could not rename the file.");
+                                }
+                                
+                                java.io.File theFile = new java.io.File(filePath);
+                                if(!file.renameTo(theFile)) {
+                                    JOptionPane.showMessageDialog(this, "Could not rename the file.");
+                                }
+                        }
+                }
+            }
+    }//GEN-LAST:event_updateButtonMouseClicked
 
     private void refreshFileList(){
         
@@ -370,6 +428,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     private javax.swing.JButton recoverFilesButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton renameButton;
+    private javax.swing.JButton updateButton;
     private javax.swing.JButton viewPermButton;
     // End of variables declaration//GEN-END:variables
 }

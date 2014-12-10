@@ -78,7 +78,7 @@ public class UploadGUI extends javax.swing.JFrame {
 		JFileChooser chooser = new JFileChooser();
 	
         // TESTING PURPOSES DUMMY USER 
-		User u = new User("martino", "test123");
+		User u = new User("mp755", "test123");
    
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
@@ -99,6 +99,8 @@ public class UploadGUI extends javax.swing.JFrame {
                                 AddPermissionGUI addPermGUI = new AddPermissionGUI();
                                 addPermGUI.addUser(u);
                                 addPermGUI.addFileID(theFile.getFileID());
+                                addPermGUI.refreshFriends();
+                                addPermGUI.refreshFriendsList();
                                 addPermGUI.setVisible(true);
                                 
 				JOptionPane.showMessageDialog(this, "File uploaded successfully!");

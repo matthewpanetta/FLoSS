@@ -28,8 +28,6 @@ public class AddPermissionGUI extends javax.swing.JFrame {
     public AddPermissionGUI() {
         serverAdapt = ServerAdapter.getInstance();
         initComponents();
-        refreshFriends();
-        refreshFriendsList();
     }
     
     public void refreshFriends() {

@@ -219,9 +219,9 @@ public class ServerAdapter {
 		}
 	}
 	
-	public void reupload(User u, String clientFilePath, String serverFilePath) {
+	public void reupload(User u, String clientFilePath, String serverFilePath, String fileName) {
 		int index = clientFilePath.lastIndexOf("\\");
-		String fileName = clientFilePath.substring(index+1);
+                int flag = 1;
 		client.File file = null;
 		
 		List<client.File> fileList = dbf.getAllFiles(u.getUserName());
@@ -234,13 +234,17 @@ public class ServerAdapter {
 		
 		if(!(file==null)) {
 			dbf.updateTimestamp(file.getOwner(), fileName);
-		
-			try {
-				fmf.upload(clientFilePath, serverFilePath, 1);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
+                        
+                        if(file.getOwner().equals(u.getUserName())) {
+                               flag = 0;
+                        }
+                        
+                        try {
+                                fmf.upload(clientFilePath, serverFilePath, flag);
+                        }
+                        catch (IOException e) {
+                                e.printStackTrace();
+                        }
 		}
 	}
 	public User getUser(String username){
