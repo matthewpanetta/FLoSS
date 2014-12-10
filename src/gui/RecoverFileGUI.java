@@ -19,6 +19,7 @@ public class RecoverFileGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;
     private String userName;
     private List<File> files;
+    private String[] fileNames;
     /**
      * Creates new form RecoverFileGUI
      */
@@ -33,7 +34,7 @@ public class RecoverFileGUI extends javax.swing.JFrame {
     
     public void refreshFileList() {
         files = serverAdapt.getDeletedFileList(userName);
-        String[] fileNames = new String[files.size()];
+        fileNames = new String[files.size()];
         
         for(int i = 0; i < files.size(); i++) {
             fileNames[i] = files.get(i).getFileName();
