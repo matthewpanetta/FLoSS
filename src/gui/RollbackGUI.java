@@ -172,7 +172,11 @@ public class RollbackGUI extends javax.swing.JFrame {
                 file.setFilePath(originalFilePath);
             }
             
-            
+            if(serverAdapt.rollbackFile(file, revisionNum, "temp//" + file.getFilePath() + "//" + file.getFileName() + "_" + revisionNum, file.getFilePath() + "\\" + file.getFileName())) {
+                JOptionPane.showMessageDialog(this, "File has been rolled back to selected version.");
+            } else {
+                JOptionPane.showMessageDialog(this, "File could not be rolled back. Please try again later.");
+            }
         }
     }//GEN-LAST:event_rollBackButtonMouseClicked
 

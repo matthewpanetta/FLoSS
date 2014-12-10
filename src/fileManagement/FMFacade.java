@@ -92,4 +92,22 @@ public class FMFacade {
             
             return recovered;
         }
+        
+        public boolean rollbackFile(String oldFilePath, String newFilePath) {
+            boolean rollback = false;
+            
+            try {
+                rollback = rfh.renameAndCopyFile(oldFilePath, newFilePath);
+            } catch(IOException e) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
+            }
+            
+            return rollback;
+        }
+        
+        public boolean deleteFileRollbacks(String oldFilePath) {
+            boolean deleted = false;
+            
+            return deleted;
+        }
 }

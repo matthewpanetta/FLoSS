@@ -201,6 +201,12 @@ public class DBFacade {
                 
                 return recovered;
         }
+        
+        public boolean rollbackFile(int fileID, int updateNum) {
+                boolean rollback = fid.rollbackFile(fileID, updateNum);
+                
+                return rollback;
+        }
 	
 	public boolean updateTimestamp(String userName, String fileName, String modifierName, int updateNum) {
 		boolean isUpdated = fid.updateTimestamp(userName, fileName, modifierName, updateNum);

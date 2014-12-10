@@ -262,6 +262,28 @@ public class ServerAdapter {
 		
 		return result;
 	}
+        
+        public boolean rollbackFile(File file, int revisionNum, String oldFilePath, String newFilePath) {
+            boolean rollback = false;
+            
+            if(dbf.rollbackFile(file.getFileID(), revisionNum)) {
+                rollback = fmf.rollbackFile(oldFilePath, newFilePath);
+                
+                if(rollback) {
+                
+                    int numRollbacksToDelete = file.getUpdateNum() - revisionNum - 1;
+                    int index = oldFilePath.lastIndexOf("_");
+                
+                    for(int i = 0; i < numRollbacksToDelete; i++) {
+                        oldFilePath = oldFilePath.substring(0, index);
+                        oldFilePath += "_" + ((revisionNum + 1) + i);
+                        fmf.deleteFile(oldFilePath);
+                    }
+                }
+            }
+            
+            return rollback;
+        }
 	
 	public void retrieve(User user, String fileName) {
 		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName, -1);

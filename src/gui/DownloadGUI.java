@@ -134,7 +134,7 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
-        downloadPrevVersion.setText("Download Pervious Version");
+        downloadPrevVersion.setText("Download Previous Version");
         downloadPrevVersion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 downloadPrevVersionMouseClicked(evt);

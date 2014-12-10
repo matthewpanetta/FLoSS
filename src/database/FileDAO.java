@@ -34,6 +34,9 @@ import client.File;
  *              + boolean recoverFile(int fileID)                               : Will recover a previously deleted file and place it in the active file table
  *                      -TRUE if file recovered, FALSE if not.
  *
+ *              + boolean rollbackFile(int fileID, int updateNum)               : Will rollback a file entry's updateNum column.
+ *                      -TRUE if file entry's updateNum column is modified, FALSE if not.
+ *
  * 		+ boolean updateTimestamp(String userName, String fileName)
  * 															: Will update the dateLastModified timestamp on the specified file entry on the database.
  * 			-TRUE if timestamp updated, FALSE if not updated.
@@ -362,6 +365,42 @@ public class FileDAO {
 		}
 		
 		return isRecovered;
+        }
+        
+        public boolean rollbackFile(int fileID, int updateNum) {
+            boolean isUpdated;
+		
+		try {
+			connection.connect();
+			statement = connection.getConnection().prepareStatement("UPDATE file SET updateNum = ? WHERE fileID = ?;");
+                        statement.setInt(1, updateNum + 1);
+			statement.setInt(2, fileID);
+			
+			statement.executeUpdate();
+			
+			isUpdated = true;
+		} 
+		catch (SQLException e) {
+			isUpdated = false;
+		}
+		
+		finally {
+			connection.close();
+			try {
+				if(statement != null) {
+					statement.close();
+				}
+				
+				if(result != null) {
+					result.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return isUpdated;
         }
         
         public boolean updateTimestamp(String userName, String fileName, String modifiedName, int updateNum) {
