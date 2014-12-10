@@ -241,7 +241,7 @@ public class ServerAdapter {
             User u = dbf.getUser(username);
             return u;
         }
-	public boolean download(User u, String serverFilePath, String clientFilePath) {
+	public boolean download(User u, String serverFilePath, String clientFilePath, int flag) {
 		boolean result = false;
 		
 		int index = serverFilePath.lastIndexOf("/");
@@ -249,7 +249,7 @@ public class ServerAdapter {
 		if(dbf.canAccess(u.getUserName(), fileName)) {
 			try {
 				serverFilePath = serverFilePath.replaceAll("\\s", "");
-				fmf.download(serverFilePath, clientFilePath);
+				fmf.download(serverFilePath, clientFilePath, flag);
 				result = true;
 			}
 			catch (MalformedURLException e) {
@@ -264,7 +264,7 @@ public class ServerAdapter {
 	}
 	
 	public void retrieve(User user, String fileName) {
-		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName);
+		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName, -1);
 		upload(user, "C:\\temp\\"+ fileName, user.getUserName());
 	}
 	public void updateUser(User u){

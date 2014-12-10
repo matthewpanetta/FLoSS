@@ -10,23 +10,21 @@ import client.File;
 import client.ServerAdapter;
 import client.User;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author mp755
  */
-public class RollbackGUI extends javax.swing.JFrame {
+public class DLPrevVersionGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;
     private DownloadGUI downloadGUI;
     private String[] fileNames;
     private File file;
     private User user;
     /**
-     * Creates new form RollbackGUI
+     * Creates new form DLPrevVersionGUI
      */
-    public RollbackGUI() {
-        serverAdapt = ServerAdapter.getInstance();
+    public DLPrevVersionGUI() {
         initComponents();
     }
     
@@ -74,16 +72,13 @@ public class RollbackGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         fileModel = new javax.swing.JList();
-        rollBackButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        downloadButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        downloadRollbackBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setText("Rollback Files to Previous Versions");
 
         fileModel.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -92,10 +87,12 @@ public class RollbackGUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(fileModel);
 
-        rollBackButton.setText("Roll Back");
-        rollBackButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel1.setText("Download a Previous Version");
+
+        downloadButton.setText("Download");
+        downloadButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                rollBackButtonMouseClicked(evt);
+                downloadButtonMouseClicked(evt);
             }
         });
 
@@ -105,8 +102,6 @@ public class RollbackGUI extends javax.swing.JFrame {
                 cancelButtonMouseClicked(evt);
             }
         });
-
-        downloadRollbackBox.setText("Download Rollbacked File");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -120,10 +115,8 @@ public class RollbackGUI extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(downloadRollbackBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                        .addComponent(rollBackButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(downloadButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 236, Short.MAX_VALUE)
                         .addComponent(cancelButton)))
                 .addContainerGap())
         );
@@ -133,13 +126,12 @@ public class RollbackGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rollBackButton)
-                    .addComponent(cancelButton)
-                    .addComponent(downloadRollbackBox))
-                .addContainerGap())
+                    .addComponent(downloadButton)
+                    .addComponent(cancelButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -149,10 +141,7 @@ public class RollbackGUI extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_cancelButtonMouseClicked
 
-    private void rollBackButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rollBackButtonMouseClicked
-        int buttonPicked = JOptionPane.showConfirmDialog(this, "Are you sure? You will lose any changes made after the selected rollback.\nYou will not be able to undo this action.", "Are you sure?", JOptionPane.YES_NO_OPTION);
-        
-        if(buttonPicked == 0) {
+    private void downloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadButtonMouseClicked
             List<String> fileVersionList = fileModel.getSelectedValuesList();
             String fileVersion = fileVersionList.get(0);
             int revisionNum;
@@ -163,18 +152,15 @@ public class RollbackGUI extends javax.swing.JFrame {
                 revisionNum = fileVersion.charAt(fileVersion.length() - 1) - 48;
             }
         
-            if(downloadRollbackBox.isSelected()) {
-                String originalFilePath = file.getFilePath();
-                file.setFilePath("temp//" + file.getFilePath());
-        
-                downloadGUI.downloadFile(file, revisionNum);
-        
-                file.setFilePath(originalFilePath);
-            }
             
+            String originalFilePath = file.getFilePath();
+            file.setFilePath("temp//" + file.getFilePath());
+        
+            downloadGUI.downloadFile(file, revisionNum);
+        
+            file.setFilePath(originalFilePath);
             
-        }
-    }//GEN-LAST:event_rollBackButtonMouseClicked
+    }//GEN-LAST:event_downloadButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -193,30 +179,29 @@ public class RollbackGUI extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RollbackGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DLPrevVersionGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RollbackGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DLPrevVersionGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RollbackGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DLPrevVersionGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RollbackGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DLPrevVersionGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RollbackGUI().setVisible(true);
+                new DLPrevVersionGUI().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JCheckBox downloadRollbackBox;
+    private javax.swing.JButton downloadButton;
     private javax.swing.JList fileModel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton rollBackButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -41,7 +41,10 @@ public class FMFacade {
                 }
 	}
 	
-	public void download(String serverFilePath, String clientFilePath) throws MalformedURLException, IOException {
+	public void download(String serverFilePath, String clientFilePath, int flag) throws MalformedURLException, IOException {
+                if(flag >= 0) {
+                    serverFilePath += "_" + flag;
+                }
 		gfh.getFile(serverFilePath, clientFilePath);
 	}
 	

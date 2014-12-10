@@ -34,7 +34,7 @@ public class DownloadGUI extends javax.swing.JFrame {
      */
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
-        user = new User("martino", "test123");
+        user = new User("mp755", "test123");
         initComponents();
     }
 
@@ -53,13 +53,14 @@ public class DownloadGUI extends javax.swing.JFrame {
         refreshFileList();
         fileListDisplay = new javax.swing.JList();
         refreshButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        downloadAndOpenButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         viewPermButton = new javax.swing.JButton();
         renameButton = new javax.swing.JButton();
         recoverFilesButton = new javax.swing.JButton();
         updateButton = new javax.swing.JButton();
         rollBackButton = new javax.swing.JButton();
+        downloadPrevVersion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -84,10 +85,10 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Download and Open");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        downloadAndOpenButton.setText("Download and Open");
+        downloadAndOpenButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                downloadAndOpenButtonMouseClicked(evt);
             }
         });
 
@@ -133,6 +134,13 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        downloadPrevVersion.setText("Download Pervious Version");
+        downloadPrevVersion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                downloadPrevVersionMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -145,7 +153,7 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(refreshButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(viewPermButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(renameButton)
@@ -155,10 +163,12 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(updateButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rollBackButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addGap(92, 92, 92)
+                        .addComponent(downloadPrevVersion)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(downloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
+                        .addComponent(downloadAndOpenButton)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -177,8 +187,9 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(updateButton)
                         .addComponent(rollBackButton))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1)
-                        .addComponent(downloadButton)))
+                        .addComponent(downloadAndOpenButton)
+                        .addComponent(downloadButton)
+                        .addComponent(downloadPrevVersion)))
                 .addContainerGap())
         );
 
@@ -201,11 +212,11 @@ public class DownloadGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
-        downloadFile();
+        downloadFile(null, -1);
     }//GEN-LAST:event_downloadButtonActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        String filePath = downloadFile();
+    private void downloadAndOpenButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadAndOpenButtonMouseClicked
+        String filePath = downloadFile(null, -1);
         java.io.File file = new java.io.File(filePath);
         
         try {
@@ -214,7 +225,7 @@ public class DownloadGUI extends javax.swing.JFrame {
                 Logger.getLogger(DownloadGUI.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(this, "Unable to open the file.\nThere may not be a default program for the filetype you want to open.");
             }
-    }//GEN-LAST:event_jButton1MouseClicked
+    }//GEN-LAST:event_downloadAndOpenButtonMouseClicked
 
     private void deleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteButtonMouseClicked
         deleteFile();
@@ -331,10 +342,27 @@ public class DownloadGUI extends javax.swing.JFrame {
             RollbackGUI rollbackGUI = new RollbackGUI();
             rollbackGUI.setFile(file);
             rollbackGUI.setUser(user);
+            rollbackGUI.setDownloadGUI(this);
             rollbackGUI.updateModel();
             rollbackGUI.setVisible(true);
         }
     }//GEN-LAST:event_rollBackButtonMouseClicked
+
+    private void downloadPrevVersionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadPrevVersionMouseClicked
+        List<String> fileName = fileListDisplay.getSelectedValuesList();
+        File file = serverAdapt.getFile(fileName.get(0), user);
+        
+        if(file == null) {
+            JOptionPane.showMessageDialog(this, "You do not have permission to rollback this file. Please contact the file's owner.");
+        } else {        
+            DLPrevVersionGUI dlPrevVersionGUI = new DLPrevVersionGUI();
+            dlPrevVersionGUI.setFile(file);
+            dlPrevVersionGUI.setUser(user);
+            dlPrevVersionGUI.setDownloadGUI(this);
+            dlPrevVersionGUI.updateModel();
+            dlPrevVersionGUI.setVisible(true);
+        }
+    }//GEN-LAST:event_downloadPrevVersionMouseClicked
 
     private void refreshFileList(){
         
@@ -409,29 +437,34 @@ public class DownloadGUI extends javax.swing.JFrame {
         }
     }
     
-    public String downloadFile() {
-        String pathToSave;
+    public String downloadFile(File toDownload, int flag) {        
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
             "gif");
         chooser.setFileFilter(filter);
         chooser.showSaveDialog(this);
-
-        List<String> selected = fileListDisplay.getSelectedValuesList();
-        for(int i = 0; i < selected.size(); i++){
+        
+        if(toDownload == null) {
+            List<String> selected = fileListDisplay.getSelectedValuesList();
             List<File> toDownloadList = serverAdapt.getAllFiles(user.getUserName());
-            File toDownload = null;
+            
             
             for(File f : toDownloadList) {
-                if(f.getFileName().equals(selected.get(i))) {
+                if(f.getFileName().equals(selected.get(0))) {
                     toDownload = f;
                     break;
                 }
             }
-
-            java.io.File clientFile = chooser.getSelectedFile();
-            String clientPath = clientFile.getAbsolutePath();
-            pathToSave = toDownload.getFilePath() + "//" + toDownload.getFileName();
+        }
+        
+        java.io.File clientFile = chooser.getSelectedFile();
+        String clientPath = clientFile.getAbsolutePath();
+            
+        return downloadFileFromServer(toDownload, clientPath, flag);
+    }
+    
+    public String downloadFileFromServer(File toDownload, String clientPath, int flag) {
+            String pathToSave = toDownload.getFilePath() + "//" + toDownload.getFileName();
 
             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
             int extensionIndex = pathToSave.lastIndexOf(".");
@@ -439,8 +472,8 @@ public class DownloadGUI extends javax.swing.JFrame {
             if(!clientPath.endsWith(extension)) {
                 clientPath += extension;
             }
-
-            if(serverAdapt.download(user, pathToSave, clientPath)) {
+            
+            if(serverAdapt.download(user, pathToSave, clientPath, flag)) {
                 JOptionPane.showMessageDialog(this, "File successfully downloaded!");
             }
 
@@ -448,15 +481,14 @@ public class DownloadGUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Could not retrieve file. Please try again");
             }
             return clientPath;
-        }
-        return null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
+    private javax.swing.JButton downloadAndOpenButton;
     private javax.swing.JButton downloadButton;
+    private javax.swing.JButton downloadPrevVersion;
     private javax.swing.JList fileListDisplay;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton recoverFilesButton;
