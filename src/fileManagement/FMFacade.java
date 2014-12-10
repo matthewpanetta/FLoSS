@@ -57,15 +57,32 @@ public class FMFacade {
             return deleted;
         }
         
-        public boolean renameFile(String oldFilePath, String newFilePath) {
+        public boolean renameFile(String oldFilePath, String newFilePath, int flag) {
             boolean renamed = false;
             
             try {
-                renamed = rfh.renameFile(oldFilePath, newFilePath);
+                renamed = rfh.renameFile(oldFilePath, newFilePath, 1);
+                
+                if(flag == 0) {
+                    renamed = rfh.renameFile("temp\\" + oldFilePath, "temp\\" + newFilePath, 1);
+                }
             } catch(IOException e) {
                 Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
             }
             
             return renamed;
+        }
+        
+        public boolean recoverFile(String filePath) {
+            boolean recovered = false;
+            
+            try {
+                recovered = rfh.renameAndCopyFile("temp\\" + filePath, filePath);
+                
+            } catch(IOException e) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
+            }
+            
+            return recovered;
         }
 }

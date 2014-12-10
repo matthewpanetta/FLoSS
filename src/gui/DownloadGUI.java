@@ -35,7 +35,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
         initComponents();
-        user = new User("mp755", "test123");
+        user = new User("martino", "test123");
     }
 
     /**
@@ -57,6 +57,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         deleteButton = new javax.swing.JButton();
         viewPermButton = new javax.swing.JButton();
         renameButton = new javax.swing.JButton();
+        recoverFilesButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -109,6 +110,13 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        recoverFilesButton.setText("Recover Files");
+        recoverFilesButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                recoverFilesButtonMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -127,6 +135,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(viewPermButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(renameButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(recoverFilesButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(downloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -144,7 +154,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(refreshButton)
                         .addComponent(deleteButton)
                         .addComponent(viewPermButton)
-                        .addComponent(renameButton))
+                        .addComponent(renameButton)
+                        .addComponent(recoverFilesButton))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton1)
                         .addComponent(downloadButton)))
@@ -233,6 +244,13 @@ public class DownloadGUI extends javax.swing.JFrame {
         renameFileGUI.setVisible(true);
     }//GEN-LAST:event_renameButtonMouseClicked
 
+    private void recoverFilesButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_recoverFilesButtonMouseClicked
+        RecoverFileGUI recoverFileGUI = new RecoverFileGUI();
+        recoverFileGUI.setUserName(user.getUserName());
+        recoverFileGUI.refreshFileList();
+        recoverFileGUI.setVisible(true);        
+    }//GEN-LAST:event_recoverFilesButtonMouseClicked
+
     private void refreshFileList(){
         
         // getFileList takes a string (the username) so just for testing we send it "mp755"
@@ -280,14 +298,28 @@ public class DownloadGUI extends javax.swing.JFrame {
     }
     
     public void deleteFile(){
-        User u = new User("mp755", "test123");
-        List<String> selected = fileListDisplay.getSelectedValuesList();
-        for(int i = 0; i < selected.size(); i++){
-            File toDelete = serverAdapt.getFile(selected.get(i), u);
-            boolean deletedFile = serverAdapt.deleteFile(toDelete);
-            if(deletedFile){
-                JOptionPane.showMessageDialog(this, "File deleted!");
-                
+        List<String> fileNames = fileListDisplay.getSelectedValuesList();
+        List<client.File> collabs = serverAdapt.getAllFiles(user.getUserName());
+        client.File theFile = null;
+        
+        
+        
+        for(int i = 0; i < fileNames.size(); i++){
+            for(client.File f : collabs) {
+                if(f.getFileName().equals(fileNames.get(0))) {
+                    theFile = f;
+                }
+            }
+            
+            if(!theFile.getOwner().equals(user.getUserName())) {
+                JOptionPane.showMessageDialog(this, "You do not have permission to delete this file.");
+            } else {
+                boolean deletedFile = serverAdapt.deleteFile(theFile);
+                if(deletedFile){
+                    JOptionPane.showMessageDialog(this, "File deleted!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "File not deleted. Please try again.");
+                }
             }
         }
     }
@@ -335,6 +367,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton recoverFilesButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton renameButton;
     private javax.swing.JButton viewPermButton;

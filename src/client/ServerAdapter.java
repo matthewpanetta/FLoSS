@@ -53,6 +53,11 @@ public class ServerAdapter {
         
         public boolean renameFile(String userName, File file, String newFilePath) {
             boolean renamed = false;
+            int flag = 1;
+            
+            if(file.getOwner().equals(userName)) {
+                flag = 0;
+            }
             
             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
             int extensionIndex = file.getFileName().lastIndexOf(".");
@@ -61,16 +66,25 @@ public class ServerAdapter {
                 newFilePath += extension;
             }
             
-            if(dbf.updateFileName(userName, file.getFileName(), newFilePath) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath)) {
+            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, flag)) {
                 renamed = true;
             }
             
             return renamed;
         }
-	
-	public User searchUserDatabase(String username){
-		return null;
-	}
+        
+        public boolean recoverFile(File file) {
+            boolean recovered = false;
+            
+            if(dbf.recoverFile(file.getFileID()) && fmf.recoverFile(file.getFilePath() + "\\" + file.getFileName())) {
+                Permission perm = new Permission(file.getOwner(), file.getFileID(), 1);
+                if(dbf.addPermission(perm)) {
+                    recovered = true;
+                }
+            }
+            
+            return recovered;
+        }
         
         public boolean addFriend(User user, User friend) {
             return dbf.addFriend(user, friend);
@@ -86,6 +100,10 @@ public class ServerAdapter {
         
         public List<Permission> getPermissionsList(int fileID) {
             return dbf.getCollaboratorList(fileID);
+        }
+        
+        public List<File> getDeletedFileList(String userName) {
+            return dbf.getDeletedFileList(userName);
         }
         
         public List<File> getCollaborations(String userName) {

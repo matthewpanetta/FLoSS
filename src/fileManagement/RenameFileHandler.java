@@ -21,7 +21,13 @@ public class RenameFileHandler {
     private String baseURL = "http://65.185.85.1//scripts//renameFile.php";
     private String fileName = "";
     
-    public boolean renameFile(String oldFilePath, String newFilePath) throws IOException {
+    public boolean renameFile(String oldFilePath, String newFilePath, int flag) throws IOException {
+        if(flag == 0) {
+            baseURL = "http://65.185.85.1//scripts//copyAndRename.php";
+        } else {
+            baseURL = "http://65.185.85.1//scripts//renameFile.php";
+        }
+        
         boolean renamed = false;
         
         c = ServerConnection.getInstance();
@@ -54,4 +60,7 @@ public class RenameFileHandler {
         return renamed;
     }
     
+    public boolean renameAndCopyFile(String oldFilePath, String newFilePath) throws IOException {
+        return renameFile(oldFilePath, newFilePath, 0);
+    }
 }
