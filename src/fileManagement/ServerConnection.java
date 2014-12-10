@@ -49,6 +49,5 @@ public class ServerConnection {
 	
 	public void closeConnection() {
 		httpUrlConnection.disconnect();
-	}
-	
+        }
 }

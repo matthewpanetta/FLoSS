@@ -43,7 +43,10 @@ public class DBConnection {
 		
 		try {
 			con = DriverManager.getConnection(dbAddress, dbUserName, dbPassword);
-		}
+		} 
+                catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e) {
+                        e.printStackTrace();
+                }
 		catch (SQLException e) {
 			e.printStackTrace();
 		}

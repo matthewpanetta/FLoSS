@@ -99,6 +99,8 @@ public class UploadGUI extends javax.swing.JFrame {
                                 AddPermissionGUI addPermGUI = new AddPermissionGUI();
                                 addPermGUI.addUser(u);
                                 addPermGUI.addFileID(theFile.getFileID());
+                                addPermGUI.refreshFriends();
+                                addPermGUI.refreshFriendsList();
                                 addPermGUI.setVisible(true);
                                 
 				JOptionPane.showMessageDialog(this, "File uploaded successfully!");

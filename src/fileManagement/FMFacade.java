@@ -3,16 +3,22 @@ package fileManagement;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FMFacade {
 	private GetFileHandler gfh;
 	private WriteFileHandler wfh;
+        private DeleteFileHandler dfh;
+        private RenameFileHandler rfh;
 	
 	private static FMFacade instance = null;
 	
 	private FMFacade() {
 		gfh = new GetFileHandler();
 		wfh = new WriteFileHandler();
+                dfh = new DeleteFileHandler();
+                rfh = new RenameFileHandler();
 	}
 	
 	public static FMFacade getInstance() {
@@ -39,4 +45,44 @@ public class FMFacade {
 		File tempFile = new File(clientFilePath);
 		return tempFile;
 	}
+        
+        public boolean deleteFile(String serverFilePath) {
+            boolean deleted = false;
+            try {
+                deleted = dfh.deleteFile(serverFilePath);
+            } catch (IOException ex) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            return deleted;
+        }
+        
+        public boolean renameFile(String oldFilePath, String newFilePath, int flag) {
+            boolean renamed = false;
+            
+            try {
+                renamed = rfh.renameFile(oldFilePath, newFilePath, 1);
+                
+                if(flag == 0) {
+                    renamed = rfh.renameFile("temp\\" + oldFilePath, "temp\\" + newFilePath, 1);
+                }
+            } catch(IOException e) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
+            }
+            
+            return renamed;
+        }
+        
+        public boolean recoverFile(String filePath) {
+            boolean recovered = false;
+            
+            try {
+                recovered = rfh.renameAndCopyFile("temp\\" + filePath, filePath);
+                
+            } catch(IOException e) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);
+            }
+            
+            return recovered;
+        }
 }

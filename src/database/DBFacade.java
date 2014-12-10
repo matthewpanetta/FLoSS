@@ -157,6 +157,12 @@ public class DBFacade {
 		
 		return fileList;
 	}
+        
+        public List<File> getDeletedFileList(String userName) {
+                List<File> fileList = fid.getDeletedFileList(userName);
+		
+		return fileList;
+        }
 	
 	public File getFile(int fileID) {
 		File file = fid.getFile(fileID);
@@ -174,6 +180,12 @@ public class DBFacade {
                 boolean isOwner = fid.isOwner(userName, fileID);
                 
                 return isOwner;
+        }
+        
+        public boolean recoverFile(int fileID) {
+                boolean recovered = fid.recoverFile(fileID);
+                
+                return recovered;
         }
 	
 	public boolean updateTimestamp(String userName, String fileName) {
