@@ -35,10 +35,10 @@ public class WriteFileHandler {
 	private String baseURL = "http://65.185.85.1//scripts//writeFile.php";
 	private String fileName = "";
 	
-	public void writeFile(File file, String userPath) throws IOException {
+	public void writeFile(File file, String userPath, int updateNum) throws IOException {
 		ServerConnection c = ServerConnection.getInstance();	
 		
-		fileName = getFileName(file);
+		fileName = getFileName(file, updateNum);
 			
 		c.updateURL(baseURL + "?filename=" + fileName + "&userpath=" + userPath);
 		c.setupPostConnection();
@@ -50,10 +50,14 @@ public class WriteFileHandler {
 		c.closeConnection();
 	}
 	
-	private String getFileName(File f) {
-		fileName = f.getName();						// Get the file's name
-		fileName = fileName.trim();					// Eliminate whitespace before and after string
-		fileName = fileName.replaceAll("\\s", "");	// Eliminate spaces in file name
+	protected String getFileName(File f, int updateNum) {
+		fileName = f.getName();                                 // Get the file's name
+		fileName = fileName.trim();                             // Eliminate whitespace before and after string
+		fileName = fileName.replaceAll("\\s", "");              // Eliminate spaces in file name
+                
+                if(updateNum >= 0) {
+                    fileName += "_" + updateNum;
+                }
 		
 		return fileName;
 	}
@@ -99,7 +103,7 @@ public class WriteFileHandler {
 		
 		WriteFileHandler wfh = new WriteFileHandler();
 		
-		wfh.writeFile(file, userPath);
+		wfh.writeFile(file, userPath, 0);
 		
 		System.out.println(wfh.getResult());
 	}

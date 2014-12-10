@@ -28,13 +28,17 @@ public class FMFacade {
 		return instance;
 	}
 	
-	public void upload(String clientFilePath, String serverFilePath, int flag) throws IOException {
-		File file = getClientFile(clientFilePath);
-		wfh.writeFile(file, serverFilePath);
-		
-		if(flag == 0) {
-			wfh.writeFile(file, "temp\\" + serverFilePath);
-		}
+	public void upload(String clientFilePath, String serverFilePath, int updateNum) throws IOException {
+                File file = getClientFile(clientFilePath);
+		wfh.writeFile(file, serverFilePath, -1);
+                wfh.writeFile(file, "temp\\" + serverFilePath, updateNum);
+                
+                if(updateNum > 3) {
+                    int updateToBeDeleted = updateNum - 3;
+                    serverFilePath = "temp\\" + serverFilePath;
+                    serverFilePath += "\\" + wfh.getFileName(file, updateToBeDeleted);
+                    dfh.deleteFile(serverFilePath);
+                }
 	}
 	
 	public void download(String serverFilePath, String clientFilePath) throws MalformedURLException, IOException {

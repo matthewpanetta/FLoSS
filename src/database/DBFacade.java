@@ -139,7 +139,7 @@ public class DBFacade {
 		if(test == null) {
 			created = fid.create(file);
 		} else {
-			fid.updateTimestamp(file.getOwner(), file.getFileName(), file.getOwner());
+			fid.updateTimestamp(file.getOwner(), file.getFileName(), file.getOwner(), file.getUpdateNum()-1);
 			created = false;
 		}
 		
@@ -153,7 +153,7 @@ public class DBFacade {
 		if(test == null) {
 			created = fid.create(file);
 		} else {
-			fid.updateTimestamp(file.getOwner(), file.getFileName(), modifierName);
+			fid.updateTimestamp(file.getOwner(), file.getFileName(), modifierName, file.getUpdateNum()-1);
 			created = false;
 		}
 		
@@ -202,8 +202,8 @@ public class DBFacade {
                 return recovered;
         }
 	
-	public boolean updateTimestamp(String userName, String fileName, String modifierName) {
-		boolean isUpdated = fid.updateTimestamp(userName, fileName, modifierName);
+	public boolean updateTimestamp(String userName, String fileName, String modifierName, int updateNum) {
+		boolean isUpdated = fid.updateTimestamp(userName, fileName, modifierName, updateNum);
 		
 		return isUpdated;
 	}
@@ -235,7 +235,15 @@ public class DBFacade {
 	
 	public boolean canAccess(String userName, String fileName) {
 		boolean access = false;
-		File tempFile = fid.getFile(userName, fileName);
+		List<File> tempFileList = getAllFiles(userName);
+                File tempFile = null;
+                
+                for(File f : tempFileList) {
+                    if(f.getFileName().equals(fileName)) {
+                        tempFile = f;
+                        break;
+                    }
+                }
 		
 		if(!(tempFile == null)) {
 			access = pd.canAccess(userName, tempFile.getFileID());

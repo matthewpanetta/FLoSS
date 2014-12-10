@@ -364,24 +364,26 @@ public class FileDAO {
 		return isRecovered;
         }
         
-        public boolean updateTimestamp(String userName, String fileName, String modifiedName) {
+        public boolean updateTimestamp(String userName, String fileName, String modifiedName, int updateNum) {
 		boolean isUpdated;
 		
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ?, updateNum = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName + "u");
                         statement.setString(2, modifiedName);
-			statement.setString(3, userName);
-			statement.setString(4, fileName);
+                        statement.setInt(3, updateNum + 1);
+			statement.setString(4, userName);
+			statement.setString(5, fileName);
 			
 			statement.executeUpdate();
 			
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ?, updateNum = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName);
                         statement.setString(2, modifiedName);
-			statement.setString(3, userName);
-			statement.setString(4, fileName + "u");
+                        statement.setInt(3, updateNum + 1);
+			statement.setString(4, userName);
+			statement.setString(5, fileName + "u");
 			
 			statement.executeUpdate();
 			isUpdated = true;
