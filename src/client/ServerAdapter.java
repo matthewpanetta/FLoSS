@@ -43,48 +43,16 @@ public class ServerAdapter {
         
         public boolean deleteFile(File file){
             boolean deleted = false;
+         //   if(fmf.delete(file) && dbf.deleteFile(file))
             
-            if(fmf.deleteFile(file.getFilePath() + "\\" + file.getFileName()) && dbf.deleteFile(file)) {
-                deleted = true;
-            }
+                deleted = dbf.deleteFile(file);
             
             return deleted;
         }
-        
-        public boolean renameFile(String userName, File file, String newFilePath) {
-            boolean renamed = false;
-            int flag = 1;
-            
-            if(file.getOwner().equals(userName)) {
-                flag = 0;
-            }
-            
-            // Get the file extension. If the user did not specify a file extension, add it onto the file name.
-            int extensionIndex = file.getFileName().lastIndexOf(".");
-            String extension = file.getFileName().substring(extensionIndex);
-            if(!newFilePath.endsWith(extension)) {
-                newFilePath += extension;
-            }
-            
-            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, flag)) {
-                renamed = true;
-            }
-            
-            return renamed;
-        }
-        
-        public boolean recoverFile(File file) {
-            boolean recovered = false;
-            
-            if(dbf.recoverFile(file.getFileID()) && fmf.recoverFile(file.getFilePath() + "\\" + file.getFileName())) {
-                Permission perm = new Permission(file.getOwner(), file.getFileID(), 1);
-                if(dbf.addPermission(perm)) {
-                    recovered = true;
-                }
-            }
-            
-            return recovered;
-        }
+	
+	public User searchUserDatabase(String username){
+		return null;
+	}
         
         public boolean addFriend(User user, User friend) {
             return dbf.addFriend(user, friend);
@@ -100,10 +68,6 @@ public class ServerAdapter {
         
         public List<Permission> getPermissionsList(int fileID) {
             return dbf.getCollaboratorList(fileID);
-        }
-        
-        public List<File> getDeletedFileList(String userName) {
-            return dbf.getDeletedFileList(userName);
         }
         
         public List<File> getCollaborations(String userName) {
@@ -219,9 +183,9 @@ public class ServerAdapter {
 		}
 	}
 	
-	public void reupload(User u, String clientFilePath, String serverFilePath, String fileName) {
+	public void reupload(User u, String clientFilePath, String serverFilePath) {
 		int index = clientFilePath.lastIndexOf("\\");
-                int flag = 1;
+		String fileName = clientFilePath.substring(index+1);
 		client.File file = null;
 		
 		List<client.File> fileList = dbf.getAllFiles(u.getUserName());
@@ -234,17 +198,13 @@ public class ServerAdapter {
 		
 		if(!(file==null)) {
 			dbf.updateTimestamp(file.getOwner(), fileName);
-                        
-                        if(file.getOwner().equals(u.getUserName())) {
-                               flag = 0;
-                        }
-                        
-                        try {
-                                fmf.upload(clientFilePath, serverFilePath, flag);
-                        }
-                        catch (IOException e) {
-                                e.printStackTrace();
-                        }
+		
+			try {
+				fmf.upload(clientFilePath, serverFilePath, 1);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	public User getUser(String username){

@@ -127,13 +127,8 @@ public class FriendDAO {
 			result = statement.executeQuery();
 			
 			while(result.next()) {
-                                if(result.getString("userName").equals(user.getUserName())) {
-                                    User friend = new User(result.getString("friendName"), "");
-                                    friendList.add(friend);
-                                } else {
-                                    User friend = new User(result.getString("userName"), "");
-                                    friendList.add(friend);
-                                }
+				User friend = new User(result.getString("friendName"), "");
+				friendList.add(friend);
 			}			
 		}
 		

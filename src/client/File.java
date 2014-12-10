@@ -3,7 +3,7 @@ package client;
 import java.util.Date;
 
 public class File {
-	private int     fileID;
+	private int		fileID;
 	private String	fileName;
 	private String	filePath;
 	private String	owner;

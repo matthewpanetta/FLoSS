@@ -27,13 +27,7 @@ import client.File;
  *
  * 		+ List<File> getFileList(String userName)			: Will retrieve every file entry for one specified user.
  * 			-ARRAYLIST of File objects, with everything generated.
- *
- *              + List<File> getDeletedFileList(String userName)			: Will retrieve every file entry that a specific user deleted at some point in the past.
- * 			-ARRAYLIST of File objects, with everything generated.
  * 
- *              + boolean recoverFile(int fileID)                               : Will recover a previously deleted file and place it in the active file table
- *                      -TRUE if file recovered, FALSE if not.
- *
  * 		+ boolean updateTimestamp(String userName, String fileName)
  * 															: Will update the dateLastModified timestamp on the specified file entry on the database.
  * 			-TRUE if timestamp updated, FALSE if not updated.
@@ -268,102 +262,8 @@ public class FileDAO {
 		
 		return fileList;
 	}
-        
-        public List<File> getDeletedFileList(String userName) {
-                List<File> fileList = new ArrayList<File>();
-		
-		try {
-			connection.connect();
-			statement = connection.getConnection().prepareStatement("SELECT * FROM filedeleted WHERE owner = ?;");
-			statement.setString(1, userName);
-			
-			result = statement.executeQuery();
-			
-			while(result.next()) {
-				
-				Date modifiedDate = result.getTimestamp("dateLastModified");
-				Date uploadDate = result.getTimestamp("dateUploaded");
-				
-				File file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);
-				fileList.add(file);
-			}			
-		}
-		
-		catch (SQLException e) {
-			fileList = null;
-		}
-		
-		finally {
-			connection.close();
-			try {
-				if(statement != null) {
-					statement.close();
-				}
-				
-				if(result != null) {
-					result.close();
-				}
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return fileList;
-        }
-        
-        public boolean recoverFile(int fileID) {
-            	boolean isRecovered;
-		
-		try {
-			connection.connect();
-			statement = connection.getConnection().prepareStatement("SELECT * FROM filedeleted WHERE fileID = ?");
-			statement.setInt(1, fileID);
-			
-			result = statement.executeQuery();
-                        result.next();
-			
-			statement = connection.getConnection().prepareStatement("INSERT INTO file (fileID, owner, fileName, filePath, dateLastModified, dateUploaded) VALUES(?,?,?,?,?,?)");
-			statement.setInt(1, result.getInt("fileID"));
-			statement.setString(2, result.getString("owner"));
-			statement.setString(3, result.getString("fileName"));
-                        statement.setString(4, result.getString("filePath"));
-                        statement.setTimestamp(5, result.getTimestamp("dateLastModified"));
-                        statement.setTimestamp(6, result.getTimestamp("dateUploaded"));              
-			
-			statement.executeUpdate();
-                        
-                        statement = connection.getConnection().prepareStatement("DELETE FROM filedeleted WHERE fileID = ?");
-                        statement.setInt(1, result.getInt("fileID"));
-                        
-                        statement.execute();
-                        
-			isRecovered = true;
-		} 
-		catch (SQLException e) {
-			isRecovered = false;
-		}
-		
-		finally {
-			connection.close();
-			try {
-				if(statement != null) {
-					statement.close();
-				}
-				
-				if(result != null) {
-					result.close();
-				}
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return isRecovered;
-        }
-        
-        public boolean updateTimestamp(String userName, String fileName) {
+	
+	public boolean updateTimestamp(String userName, String fileName) {
 		boolean isUpdated;
 		
 		try {
@@ -509,32 +409,7 @@ public class FileDAO {
 			System.out.printf("FileName:\t\t%s\nOwner:\t\t\t%s\nDate Last Modified:\t%s\nDate Uploaded:\t\t%s\n\n", f.getFileName(), f.getOwner(), f.getModifiedDate(), f.getCreationDate());
 		}
 		*/
-                
-                /* GET DELETED FILE LIST */
-                /*List<File> fileList = fd.getDeletedFileList("mp755");
-                
-                for(File f : fileList) {
-			System.out.printf("FileName:\t\t%s\nOwner:\t\t\t%s\nDate Last Modified:\t%s\nDate Uploaded:\t\t%s\n\n", f.getFileName(), f.getOwner(), f.getModifiedDate(), f.getCreationDate());
-		}
-                /*
-                
-                /* RECOVER FILE */
-                /*List<File> fileList = fd.getDeletedFileList("mp755");
-                
-                int fileID = fileList.get(0).getFileID();
-                boolean recovered = fd.recoverFile(fileID);
-                
-                if(recovered) {
-                    fileList = fd.getFileList("mp755");
 		
-                    for(File f : fileList) {
-			System.out.printf("FileName:\t\t%s\nOwner:\t\t\t%s\nDate Last Modified:\t%s\nDate Uploaded:\t\t%s\n\n", f.getFileName(), f.getOwner(), f.getModifiedDate(), f.getCreationDate());
-                    }
-                } else {
-                    System.out.printf("\nCould not recover the file.");
-                }
-                */
-                
 		/* UPDATE TIMESTAMP */
 		/*fd.updateTimestamp("mp755", "LOL.txt");
 		File testFile = fd.getFile("mp755", "LOL.txt");
