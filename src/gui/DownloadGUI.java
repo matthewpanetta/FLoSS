@@ -34,8 +34,8 @@ public class DownloadGUI extends javax.swing.JFrame {
      */
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
-        initComponents();
         user = new User("martino", "test123");
+        initComponents();
     }
 
     /**
@@ -254,7 +254,7 @@ public class DownloadGUI extends javax.swing.JFrame {
     private void refreshFileList(){
         
         // getFileList takes a string (the username) so just for testing we send it "mp755"
-        fileList = serverAdapt.getFileList("mp755");
+        fileList = serverAdapt.getFileList(user.getUserName());
       
         fileNames = new String[fileList.size()];
         for(int i = 0; i < fileList.size(); i++){

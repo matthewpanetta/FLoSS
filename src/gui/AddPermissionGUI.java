@@ -33,7 +33,6 @@ public class AddPermissionGUI extends javax.swing.JFrame {
     }
     
     public void refreshFriends() {
-        user = new User("mp755", "test123");
         friendsList = serverAdapt.getFriends(user);
         friendsNames = new String[friendsList.size()];
         
