@@ -139,7 +139,21 @@ public class DBFacade {
 		if(test == null) {
 			created = fid.create(file);
 		} else {
-			fid.updateTimestamp(file.getOwner(), file.getFileName());
+			fid.updateTimestamp(file.getOwner(), file.getFileName(), file.getOwner());
+			created = false;
+		}
+		
+		return created;
+	}
+        
+        public boolean addFile(File file, String modifierName) {
+		File test = fid.getFile(file.getOwner(), file.getFileName());
+		boolean created;
+		
+		if(test == null) {
+			created = fid.create(file);
+		} else {
+			fid.updateTimestamp(file.getOwner(), file.getFileName(), modifierName);
 			created = false;
 		}
 		
@@ -188,14 +202,14 @@ public class DBFacade {
                 return recovered;
         }
 	
-	public boolean updateTimestamp(String userName, String fileName) {
-		boolean isUpdated = fid.updateTimestamp(userName, fileName);
+	public boolean updateTimestamp(String userName, String fileName, String modifierName) {
+		boolean isUpdated = fid.updateTimestamp(userName, fileName, modifierName);
 		
 		return isUpdated;
 	}
 	
-	public boolean updateFileName(String userName, String oldName, String newName, String modifiedName) {
-		boolean isChanged = fid.updateFileName(userName, oldName, newName, modifiedName);
+	public boolean updateFileName(String ownerName, String oldName, String newName, String modifierName) {
+		boolean isChanged = fid.updateFileName(ownerName, oldName, newName, modifierName);
 		
 		return isChanged;
 	}

@@ -53,11 +53,6 @@ public class ServerAdapter {
         
         public boolean renameFile(String userName, File file, String newFilePath) {
             boolean renamed = false;
-            int flag = 1;
-            
-            if(file.getOwner().equals(userName)) {
-                flag = 0;
-            }
             
             // Get the file extension. If the user did not specify a file extension, add it onto the file name.
             int extensionIndex = file.getFileName().lastIndexOf(".");
@@ -66,7 +61,7 @@ public class ServerAdapter {
                 newFilePath += extension;
             }
             
-            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, flag)) {
+            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, 0)) {
                 renamed = true;
             }
             
@@ -233,7 +228,7 @@ public class ServerAdapter {
 		}
 		
 		if(!(file==null)) {
-			dbf.updateTimestamp(file.getOwner(), fileName);
+			dbf.updateTimestamp(file.getOwner(), fileName, u.getUserName());
                         
                         if(file.getOwner().equals(u.getUserName())) {
                                flag = 0;

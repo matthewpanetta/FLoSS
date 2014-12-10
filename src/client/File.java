@@ -4,18 +4,22 @@ import java.util.Date;
 
 public class File {
 	private int     fileID;
+        private int     updateNum;
 	private String	fileName;
 	private String	filePath;
 	private String	owner;
+        private String  lastModifier;
 	private Date	modifiedDate;
 	private Date	creationDate;
 	
-	public File(int fileID, String fileName, String filePath, String userName, Date modifiedDate, Date creationDate) {
+	public File(int fileID, int updateNum, String fileName, String filePath, String userName, String lastModifier, Date modifiedDate, Date creationDate) {
 		super();
 		this.fileID = fileID;
+                this.updateNum = updateNum;
 		this.fileName = fileName;
 		this.filePath = filePath;
 		this.owner = userName;
+                this.lastModifier = lastModifier;
 		this.modifiedDate = modifiedDate;
 		this.creationDate = creationDate;
 	}
@@ -73,5 +77,21 @@ public class File {
 	public void setFileID(int fileID) {
 		this.fileID = fileID;
 	}
+        
+        public int getUpdateNum() {
+                return updateNum;
+        }
+        
+        public void setUpdateNum(int updateNum) {
+                this.updateNum = updateNum;
+        }
+        
+        public String getLastModifier() {
+                return lastModifier;
+        }
+        
+        public void setLastModifier(String lastModifier) {
+                this.lastModifier = lastModifier;
+        }
 	
 }

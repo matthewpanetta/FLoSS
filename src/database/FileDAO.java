@@ -109,7 +109,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);				
+				file = new File(result.getInt("fileID"), result.getInt("updateNum"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), result.getString("lastModifiedBy"), modifiedDate, uploadDate);				
 			}
 		}
 		
@@ -158,7 +158,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);				
+				file = new File(result.getInt("fileID"), result.getInt("updateNum"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), result.getString("lastModifiedBy"), modifiedDate, uploadDate);				
 			}
 		}
 		
@@ -242,7 +242,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				File file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);
+				File file = new File(result.getInt("fileID"), result.getInt("updateNum"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), result.getString("lastModifiedBy"), modifiedDate, uploadDate);
 				fileList.add(file);
 			}			
 		}
@@ -285,7 +285,7 @@ public class FileDAO {
 				Date modifiedDate = result.getTimestamp("dateLastModified");
 				Date uploadDate = result.getTimestamp("dateUploaded");
 				
-				File file = new File(result.getInt("fileID"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), modifiedDate, uploadDate);
+				File file = new File(result.getInt("fileID"), result.getInt("updateNum"), result.getString("fileName"), result.getString("filePath"), result.getString("owner"), result.getString("lastModifiedBy"), modifiedDate, uploadDate);
 				fileList.add(file);
 			}			
 		}
@@ -369,7 +369,7 @@ public class FileDAO {
 		
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName + "u");
                         statement.setString(2, modifiedName);
 			statement.setString(3, userName);
@@ -377,7 +377,7 @@ public class FileDAO {
 			
 			statement.executeUpdate();
 			
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, fileName);
                         statement.setString(2, modifiedName);
 			statement.setString(3, userName);
@@ -414,7 +414,7 @@ public class FileDAO {
 		
 		try {
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ? AND lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
+			statement = connection.getConnection().prepareStatement("UPDATE file SET fileName = ?, lastModifiedBy = ? WHERE owner = ? AND fileName = ?;");
 			statement.setString(1, newFileName);
                         statement.setString(2, modifiedName);
 			statement.setString(3, userName);
