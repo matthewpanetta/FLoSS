@@ -18,22 +18,22 @@ public class PermissionHandler extends Handler{
 	public void addOwner(User owner){
 		// Add an owner to a file.
 		//permission = new Permission('o');
-		super.getDatabaseAdapter().addOwner(owner, permission);
+		//super.getDatabaseAdapter().addOwner(owner, permission);
 		
 	}
 	public void addAccessorToGroup(User friend, Group g){
 		// Add a user to the group
 		//permission = new Permission('a');
-		super.getDatabaseAdapter().addAccessor(friend, g, permission);
+		//super.getDatabaseAdapter().addAccessor(friend, g, permission);
 		
 	}
-	public boolean checkOwner(User owner, Group g){
-		return super.getDatabaseAdapter().checkOwner(owner, g);
-	}
-	public boolean checkOwner(User owner, File f) {
-		return super.getDatabaseAdapter().checkOwner(owner, f);
-	}
-	public boolean checkAccessor(User friend, Group g){
-		return super.getDatabaseAdapter().checkAccessor(friend, g);
-	}
+	//public boolean checkOwner(User owner, Group g){
+		//return super.getDatabaseAdapter().checkOwner(owner, g);
+	//}
+	//public boolean checkOwner(User owner, File f) {
+		//return super.getDatabaseAdapter().checkOwner(owner, f);
+	//}
+	//public boolean checkAccessor(User friend, Group g){
+		//return super.getDatabaseAdapter().checkAccessor(friend, g);
+	//}
 }

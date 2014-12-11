@@ -48,8 +48,9 @@ public class ServerAdapter {
                 int mostRecentVersion = file.getUpdateNum() - 1;
                 
                 String oldFilePath = "temp\\" + file.getFilePath() + "\\" + file.getFileName() + "_" + mostRecentVersion;
-                String newFilePath = oldFilePath.substring(0, oldFilePath.length() - 1);
-                newFilePath += "0";
+                int index = oldFilePath.lastIndexOf("_");
+                String newFilePath = oldFilePath.substring(0, index);
+                newFilePath += "_0";
                 
                 fmf.renameFile(oldFilePath, newFilePath, 1, 1);
                 
@@ -79,6 +80,29 @@ public class ServerAdapter {
             
             if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) 
                     && fmf.renameFile(file.getFilePath() + "\\" + file.getFileName(), file.getFilePath() + "\\" + newFilePath, file.getUpdateNum(), 0)) {
+                renamed = true;
+            }
+            
+            return renamed;
+        }
+        
+        public boolean renameFileUploadedWithDiffName(String userName, File file, String oldFileName, String newFilePath) {
+            boolean renamed = false;
+            
+            // Get the file extension. If the user did not specify a file extension, add it onto the file name.
+            int extensionIndex = file.getFileName().lastIndexOf(".");
+            String extension = file.getFileName().substring(extensionIndex);
+            if(!newFilePath.endsWith(extension)) {
+                newFilePath += extension;
+            }
+            
+            if(dbf.updateFileName(file.getOwner(), file.getFileName(), newFilePath, userName) 
+                    && fmf.renameFile(file.getFilePath() + "\\" + oldFileName, file.getFilePath() + "\\" + newFilePath, file.getUpdateNum() + 1, 0)) {
+                
+                if(file.getUpdateNum() > 3) {
+                    newFilePath = newFilePath += "_" + (file.getUpdateNum() - 3);
+                    fmf.deleteFile("temp\\" + file.getOwner() + "\\" + newFilePath);
+                }
                 renamed = true;
             }
             
@@ -126,18 +150,6 @@ public class ServerAdapter {
             return dbf.getAllFiles(userName);
         }
 	
-	public void createUser(){
-		
-	}
-	
-	public void removeUser(){
-		
-	}
-	
-	public void verifyUserCredentials(User u){
-		
-	}
-	
 	public boolean addPermission(Permission p){
             return dbf.addPermission(p);
 	}
@@ -149,38 +161,6 @@ public class ServerAdapter {
         public boolean isOwner(String userName, int fileID) {
             return dbf.isOwner(userName, fileID);
         }
-	
-	public void verifyFile(File f){
-		
-	}
-	
-	public void verifyPermissions(User u, File f){
-		
-	}
-	
-	public File retrieveFile(String filename){
-		return null;
-	}
-	
-	public void addOwner(User u, Permission p) {
-		
-	}
-	
-	public void addAccessor(User u, Group g, Permission p) {
-		
-	}
-	
-	public boolean checkOwner(User u, Group g){
-		return true;
-	}
-	
-	public boolean checkOwner(User u, File f) {
-		return true;
-	}
-	
-	public boolean checkAccessor(User u, Group g) {
-		return true;
-	}
         
         public List<File> getFileList(String userName) {
             return dbf.getAllFiles(userName);

@@ -287,12 +287,14 @@ public class DownloadGUI extends javax.swing.JFrame {
             fileList = serverAdapt.getAllFiles(user.getUserName());
             String owner = user.getUserName();
             int updateNum = -1;
+            File file = null;
             
             for(String fileName : fileNames) {
                 for(File f : fileList) {
                     if(f.getFileName().equals(fileName)) {
                         owner = f.getOwner();
                         updateNum = f.getUpdateNum();
+                        file = f;
                     }
                 }
                 // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
@@ -313,19 +315,16 @@ public class DownloadGUI extends javax.swing.JFrame {
 			for(java.io.File f : fileList){
                                 String filePath = f.getPath();
                                 int index = filePath.lastIndexOf("\\");
-                                String modFilePath = filePath.replace(filePath.substring(index+1), fileName);
+                                String modFilePath = f.getName();
                                 
-                                java.io.File file = new java.io.File(modFilePath);
-                                if(f.renameTo(file)) {
-                                    serverAdapt.reupload(user, modFilePath, owner, fileName, updateNum);
-                                    JOptionPane.showMessageDialog(this, "File updated successfully!");                                  
+                                serverAdapt.reupload(user, filePath, owner, fileName, updateNum);
+                                
+                                boolean rename = serverAdapt.renameFileUploadedWithDiffName(user.getUserName(), file, modFilePath, file.getFileName());
+                                
+                                if(rename) {
+                                    JOptionPane.showMessageDialog(this, "File updated successfully!");
                                 } else {
-                                    JOptionPane.showMessageDialog(this, "Could not rename the file.");
-                                }
-                                
-                                java.io.File theFile = new java.io.File(filePath);
-                                if(!file.renameTo(theFile)) {
-                                    JOptionPane.showMessageDialog(this, "Could not rename the file.");
+                                    JOptionPane.showMessageDialog(this, "Could not update the file. Please try again later.");
                                 }
                         }
                 }
