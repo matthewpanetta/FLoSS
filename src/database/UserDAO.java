@@ -196,16 +196,15 @@ public class UserDAO {
 		try {
 			java.sql.Date tempDate = new java.sql.Date(user.getBirthDate().getTime());
 			connection.connect();
-			statement = connection.getConnection().prepareStatement("UPDATE user SET userName = ?, password = ?, firstName = ?, middleInitial = ?, lastName = ?, gender = ?, birthDate = ?, email = ? WHERE userName LIKE(?);");
+			statement = connection.getConnection().prepareStatement("UPDATE user SET userName = ?, firstName = ?, middleInitial = ?, lastName = ?, gender = ?, birthDate = ?, email = ? WHERE userName LIKE(?);");
 			statement.setString(1, user.getUserName());
-			statement.setString(2, PasswordHash.createHash(user.getPassword()));
-			statement.setString(3, user.getFirstName());
-			statement.setString(4, user.getMiddleInitial());
-			statement.setString(5, user.getLastName());
-			statement.setString(6, user.getGender());
-			statement.setDate(7, tempDate);
-			statement.setString(8, user.getEmail());
-			statement.setString(9, user.getUserName());
+			statement.setString(2, user.getFirstName());
+			statement.setString(3, user.getMiddleInitial());
+			statement.setString(4, user.getLastName());
+			statement.setString(5, user.getGender());
+			statement.setDate(6, tempDate);
+			statement.setString(7, user.getEmail());
+			statement.setString(8, user.getUserName());
 			
 			statement.executeUpdate();
 		} 
@@ -233,6 +232,45 @@ public class UserDAO {
 		return true;
 		
 	}
+        
+        public boolean updateUserPassword(String userName, String password) {
+                try {
+			connection.connect();
+			statement = connection.getConnection().prepareStatement("UPDATE user SET password = ? WHERE userName = ?");
+                        statement.setString(1, PasswordHash.createHash(password));
+			statement.setString(2, userName);
+			
+			statement.executeUpdate();
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		} 
+                
+                catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvalidKeySpecException ex) {
+                    Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+                }
+		
+		finally {
+			connection.close();
+			try {
+				if(statement != null) {
+					statement.close();
+				}
+				
+				if(result != null) {
+					result.close();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
+        }
 	
 	public boolean authenticate(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		boolean authenticated = false;

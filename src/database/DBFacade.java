@@ -105,6 +105,12 @@ public class DBFacade {
 		
 		return isRemoved;
 	}
+        
+        public boolean updateUserPassword(String userName, String password) {
+                boolean isUpdated = ud.updateUserPassword(userName, password);
+                
+                return isUpdated;
+        }
 	
 	/* FRIEND DAO */
 	public List<User> getFriends(User user) {

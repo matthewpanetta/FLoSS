@@ -55,4 +55,22 @@ public class DeleteFileHandler {
         
         return deleted;
     }
+    
+    public boolean deleteDirectory(String dirPath) throws IOException {
+        boolean isDeleted = false;
+        baseURL = "http://65.185.85.1//scripts//deleteDirectory.php";
+        
+        c = ServerConnection.getInstance();
+        c.updateURL(baseURL);
+        
+        boolean deleted = false;
+        c.setupPostConnection();
+        
+        try(OutputStreamWriter out = new OutputStreamWriter(c.getConnection().getOutputStream())) {
+            out.write("filepath=" + dirPath);
+            isDeleted = true;
+        }
+        
+        return isDeleted;
+    }
 }

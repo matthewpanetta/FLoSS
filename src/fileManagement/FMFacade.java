@@ -110,8 +110,22 @@ public class FMFacade {
             return rollback;
         }
         
-        public boolean deleteFileRollbacks(String oldFilePath) {
+        public boolean removeUser(String userName) {
             boolean deleted = false;
+            
+            try {
+                deleted = dfh.deleteDirectory(userName);
+            } catch (IOException ex) {
+                Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if(deleted) {
+                try {
+                    deleted = dfh.deleteDirectory("temp\\" + userName);
+                } catch (IOException ex) {
+                    Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             
             return deleted;
         }

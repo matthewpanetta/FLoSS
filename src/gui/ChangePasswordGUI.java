@@ -168,7 +168,7 @@ public class ChangePasswordGUI extends javax.swing.JFrame {
             // need to call a serverAdapt that updates the user stuff
             User user = serverAdapt.getUser(username);
             user.setPassword(newPassword);                      // user instance now has password of newPassword
-            serverAdapt.updateUser(user);
+            serverAdapt.updateUserPassword(user.getUserName(), user.getPassword());
         }
         else{
             JOptionPane.showMessageDialog(this, "new passwords do not match bro!");

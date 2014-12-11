@@ -289,6 +289,21 @@ public class ServerAdapter {
 	public void updateUser(User u){
             dbf.updateUser(u);
         }
+        
+        public boolean updateUserPassword(String userName, String password) {
+            return dbf.updateUserPassword(userName, password);
+        }
+        
+        public boolean deleteUser(User user) {
+            boolean success = false;
+            
+            if(dbf.removeUser(user) && fmf.removeUser(user.getUserName())) {
+                success = true;
+            }
+            
+            return success;
+        }
+        
 	public static void main(String[] args) {
 		User u = new User("mp755", "test123");
 		String clientFilePath = "C:\\Users\\mp755\\Documents\\ugates.docx";
