@@ -11,6 +11,7 @@ public class File {
         private String  lastModifier;
 	private Date	modifiedDate;
 	private Date	creationDate;
+        private FileLog fileLog;
 	
 	public File(int fileID, int updateNum, String fileName, String filePath, String userName, String lastModifier, Date modifiedDate, Date creationDate) {
 		super();
@@ -92,6 +93,14 @@ public class File {
         
         public void setLastModifier(String lastModifier) {
                 this.lastModifier = lastModifier;
+        }
+        
+        public void setFileLog(FileLog fileLog) {
+            this.fileLog = fileLog;
+        }
+        
+        public FileLog getFileLog() {
+            return fileLog;
         }
 	
 }

@@ -173,12 +173,12 @@ public class ServerAdapter {
             
             return isRegistered;
         }
-	
-        // hackers need to encrypt this later
+
         public boolean authenticateUser(User u) throws NoSuchAlgorithmException, InvalidKeySpecException{
             return dbf.authenticate(u);
         }
-	public List<File> search(User user, String fileName) {
+	
+        public List<File> search(User user, String fileName) {
 		List<File> fileList = new ArrayList<File>();
 		List<File> allFiles = dbf.getAllFiles(user.getUserName());
 		
@@ -234,11 +234,13 @@ public class ServerAdapter {
                         }
 		}
 	}
-	public User getUser(String username){
+	
+        public User getUser(String username){
             User u = dbf.getUser(username);
             return u;
         }
-	public boolean download(User u, String serverFilePath, String clientFilePath, int flag) {
+	
+        public boolean download(User u, String serverFilePath, String clientFilePath, int flag) {
 		boolean result = false;
 		
 		int index = serverFilePath.lastIndexOf("/");
@@ -286,7 +288,8 @@ public class ServerAdapter {
 		download(user, "temp\\"+user.getUserName()+"\\"+fileName, "C:\\temp\\"+fileName, -1);
 		upload(user, "C:\\temp\\"+ fileName, user.getUserName());
 	}
-	public void updateUser(User u){
+	
+        public void updateUser(User u){
             dbf.updateUser(u);
         }
         
@@ -304,12 +307,12 @@ public class ServerAdapter {
             return success;
         }
         
-	public static void main(String[] args) {
-		User u = new User("mp755", "test123");
+        public static void main(String[] args) {
+            ServerAdapter sa = ServerAdapter.getInstance();
+		/*User u = new User("mp755", "test123");
 		String clientFilePath = "C:\\Users\\mp755\\Documents\\ugates.docx";
 		String serverFilePath = "mp755";
 		
-		ServerAdapter sa = new ServerAdapter();
 		//sa.upload(u, clientFilePath, serverFilePath);
 		
 		serverFilePath = "mp755\\ugates.docx";
@@ -318,6 +321,23 @@ public class ServerAdapter {
 		//sa.download(u, serverFilePath, clientFilePath);
 		
 		
-		sa.retrieve(u, "ugates.docx");
+		sa.retrieve(u, "ugates.docx"); */
+            
+            /*
+            FileLog fileLog = new FileLog();
+            fileLog.setFileName("mp755.txt");
+            
+            FileLogEntry fle1 = new FileLogEntry("mp755", "Created the file.", "12/11/14 10:22 AM");
+            FileLogEntry fle2 = new FileLogEntry("mp755", "Updated the text.", "12/11/14 10:35 AM");
+            
+            fileLog.addToLog(fle1);
+            fileLog.addToLog(fle2);
+            
+            //sa.writeFileLog(fileLog);
+            
+            FileLog fileLog2 = sa.retrieveFileLog("mp755.txt");
+            
+            System.out.println(fileLog2.getFileLog().get(1).getLogDescription());
+            */
 	}
 }

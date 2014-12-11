@@ -163,7 +163,7 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(updateButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rollBackButton)
-                        .addGap(92, 92, 92)
+                        .addGap(94, 94, 94)
                         .addComponent(downloadPrevVersion)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(downloadButton)
