@@ -88,7 +88,8 @@ public class FMFacade {
             boolean recovered = false;
             
             try {
-                recovered = rfh.renameAndCopyFile("temp\\" + filePath + "_0", filePath);
+                recovered = rfh.renameAndCopyFile("temp\\" + filePath + "_0r", filePath);
+                rfh.renameFile("temp\\" + filePath + "_0r", "temp\\" + filePath + "_0", 1);
                 
             } catch(IOException e) {
                 Logger.getLogger(FMFacade.class.getName()).log(Level.SEVERE, null, e);

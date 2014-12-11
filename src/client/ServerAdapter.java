@@ -50,7 +50,7 @@ public class ServerAdapter {
                 String oldFilePath = "temp\\" + file.getFilePath() + "\\" + file.getFileName() + "_" + mostRecentVersion;
                 int index = oldFilePath.lastIndexOf("_");
                 String newFilePath = oldFilePath.substring(0, index);
-                newFilePath += "_0";
+                newFilePath += "_0r";
                 
                 fmf.renameFile(oldFilePath, newFilePath, 1, 1);
                 
