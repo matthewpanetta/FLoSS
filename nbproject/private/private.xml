@@ -2,6 +2,15 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/gui/DownloadGUI.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/gui/FriendsGUI.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/gui/LoginGUI.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/database/FriendDAO.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/gui/UploadGUI.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/gui/ViewPermissionGUI.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/client/ServerAdapter.java</file>
+            <file>file:/C:/Users/mp755/Documents/NetBeansProjects/server/src/database/DBFacade.java</file>
+        </group>
     </open-files>
 </project-private>

@@ -26,6 +26,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class DownloadGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;
+    private String[] friendsNames;
+    private List<User> friendsList;
     private List<File> fileList;
     private String[] fileNames;
     private User user;
@@ -34,7 +36,9 @@ public class DownloadGUI extends javax.swing.JFrame {
      */
     public DownloadGUI() {
         serverAdapt = ServerAdapter.getInstance();
-        user = new User("mp755", "test123");
+        fileNames = new String[0];
+        //user = new User("mp755", "test123");
+        
         initComponents();
     }
 
@@ -47,10 +51,14 @@ public class DownloadGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        friendsModel = new javax.swing.JList();
         jPanel1 = new javax.swing.JPanel();
         downloadButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        refreshFileList();
+        //refreshFileList();
         fileListDisplay = new javax.swing.JList();
         refreshButton = new javax.swing.JButton();
         downloadAndOpenButton = new javax.swing.JButton();
@@ -61,8 +69,41 @@ public class DownloadGUI extends javax.swing.JFrame {
         updateButton = new javax.swing.JButton();
         rollBackButton = new javax.swing.JButton();
         downloadPrevVersion = new javax.swing.JButton();
+        uploadButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
+
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("Friends List"));
+
+        friendsModel.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(friendsModel);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 988, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Home", jPanel2);
 
         downloadButton.setText("Download");
         downloadButton.addActionListener(new java.awt.event.ActionListener() {
@@ -141,6 +182,13 @@ public class DownloadGUI extends javax.swing.JFrame {
             }
         });
 
+        uploadButton.setText("upload");
+        uploadButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uploadButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -163,7 +211,9 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(updateButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rollBackButton)
-                        .addGap(94, 94, 94)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uploadButton)
+                        .addGap(15, 15, 15)
                         .addComponent(downloadPrevVersion)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(downloadButton)
@@ -175,7 +225,7 @@ public class DownloadGUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -185,7 +235,8 @@ public class DownloadGUI extends javax.swing.JFrame {
                         .addComponent(renameButton)
                         .addComponent(recoverFilesButton)
                         .addComponent(updateButton)
-                        .addComponent(rollBackButton))
+                        .addComponent(rollBackButton)
+                        .addComponent(uploadButton))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(downloadAndOpenButton)
                         .addComponent(downloadButton)
@@ -193,11 +244,19 @@ public class DownloadGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_END);
+        jTabbedPane1.addTab("Files", jPanel1);
+
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    public void setUser(User u){
+        this.user = u;
+    
+    }
+    public User getUser(User u){
+        return this.user;
+    }
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         // TODO add your handling code here:
 
@@ -363,16 +422,98 @@ public class DownloadGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_downloadPrevVersionMouseClicked
 
-    private void refreshFileList(){
+    private void uploadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadButtonActionPerformed
+
+        // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
+		JFileChooser chooser = new JFileChooser();
+	
+        // TESTING PURPOSES DUMMY USER 
+		User u = new User("tommy", "patches");
+   
+		// Restrict the user to certain file formats
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
+			"gif");
+		
+		chooser.setFileFilter(filter);
+		
+		// Allow the user to upload multiple files.
+		chooser.setMultiSelectionEnabled(true);
+		
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			java.io.File[] fileList = chooser.getSelectedFiles();
+			for(java.io.File f : fileList){                       
+				serverAdapt.upload(u, f.getPath(), u.getUserName());
+                                
+                                client.File theFile = serverAdapt.getFile(f.getName(), u);
+                                AddPermissionGUI addPermGUI = new AddPermissionGUI();
+                                addPermGUI.addUser(u);
+                                addPermGUI.addFileID(theFile.getFileID());
+                                addPermGUI.refreshFriends();
+                                addPermGUI.refreshFriendsList();
+                                addPermGUI.setVisible(true);
+                                
+				JOptionPane.showMessageDialog(this, "File uploaded successfully!");
+                                refreshFileList();
+                        }
+                }
+    }//GEN-LAST:event_uploadButtonActionPerformed
+
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+
+        if(jTabbedPane1.getSelectedIndex() == 1){
+            JOptionPane.showMessageDialog(this, "loading files... this takes time");
+            refreshFileList();
+             fileListDisplay.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = fileNames;
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(fileListDisplay);
+        }
+        
+        /*if(jTabbedPane1.getSelectedIndex() == 0){
+            refreshFriends();
+            refreshFriendsList();
+        }*/
+    }//GEN-LAST:event_jTabbedPane1StateChanged
+
+    public void refreshFileList(){
         
         // getFileList takes a string (the username) so just for testing we send it "mp755"
         fileList = serverAdapt.getFileList(user.getUserName());
-      
         fileNames = new String[fileList.size()];
         for(int i = 0; i < fileList.size(); i++){
             File f = fileList.get(i);
             fileNames[i] = f.getFileName();
         }
+    }
+    
+    public void getRecentFiles(){
+        refreshFileList();
+        recentFiles.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = fileNames;
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(fileListDisplay);
+    }
+    
+    public void getRecentCollabs(){
+        fileList = serverAdapt.getCollaborations(user.getUserName());
+        fileNames = new String[fileList.size()];
+        for(int i = 0; i < fileList.size(); i++){
+            File f = fileList.get(i);
+            fileNames[i] = f.getFileName();
+        }
+        
+        recentCollabs.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = fileNames;
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(fileListDisplay);
+        
     }
     /**
      * @param args the command line arguments
@@ -462,6 +603,24 @@ public class DownloadGUI extends javax.swing.JFrame {
         return downloadFileFromServer(toDownload, clientPath, flag);
     }
     
+    public void refreshFriends() {
+        friendsList = serverAdapt.getFriends(user);
+        friendsNames = new String[friendsList.size()];
+        
+        for(int i = 0; i < friendsList.size(); i++) {
+            friendsNames[i] = friendsList.get(i).getUserName();
+        }
+    }
+    
+    public void refreshFriendsList() {
+        friendsModel.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = friendsNames;
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(friendsModel);
+    }
+    
     public String downloadFileFromServer(File toDownload, String clientPath, int flag) {
             String pathToSave = toDownload.getFilePath() + "//" + toDownload.getFileName();
 
@@ -488,13 +647,18 @@ public class DownloadGUI extends javax.swing.JFrame {
     private javax.swing.JButton downloadButton;
     private javax.swing.JButton downloadPrevVersion;
     private javax.swing.JList fileListDisplay;
+    private javax.swing.JList friendsModel;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton recoverFilesButton;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton renameButton;
     private javax.swing.JButton rollBackButton;
     private javax.swing.JButton updateButton;
+    private javax.swing.JButton uploadButton;
     private javax.swing.JButton viewPermButton;
     // End of variables declaration//GEN-END:variables
 }

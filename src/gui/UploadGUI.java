@@ -78,7 +78,7 @@ public class UploadGUI extends javax.swing.JFrame {
 		JFileChooser chooser = new JFileChooser();
 	
         // TESTING PURPOSES DUMMY USER 
-		User u = new User("mp755", "test123");
+		User u = new User("tommy", "patches");
    
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",

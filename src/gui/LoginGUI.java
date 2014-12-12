@@ -206,6 +206,15 @@ public class LoginGUI extends javax.swing.JFrame {
             }
             else {
                 JOptionPane.showMessageDialog(this, "Login Successful");
+                DownloadGUI download = new DownloadGUI();
+                download.setUser(u);
+                download.refreshFileList();
+                download.refreshFriends();
+                download.refreshFriendsList();
+                download.getRecentFiles();
+                download.getRecentCollabs();
+                download.setVisible(true);
+                
             }
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);

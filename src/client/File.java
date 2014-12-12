@@ -89,4 +89,8 @@ public class File {
         public String getLastModifier() {
                 return lastModifier;
         }
+        
+        public void setLastModifier(String lastModifier) {
+                this.lastModifier = lastModifier;
+        }	
 }
