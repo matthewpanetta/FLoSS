@@ -12,7 +12,7 @@ public class FMFacade {
         private DeleteFileHandler dfh;
         private RenameFileHandler rfh;
 	
-	private static FMFacade instance = null;
+	public static FMFacade instance = null;
 	
 	private FMFacade() {
 		gfh = new GetFileHandler();
