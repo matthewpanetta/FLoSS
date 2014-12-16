@@ -214,7 +214,7 @@ public class LoginGUI extends javax.swing.JFrame {
                 download.getRecentFiles();
                 download.getRecentCollabs();
                 download.setVisible(true);
-                
+                dispose();
             }
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
