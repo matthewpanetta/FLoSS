@@ -361,7 +361,7 @@ public class DownloadGUI extends javax.swing.JFrame {
    
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
-			"gif");
+			"gif", "pdf", "vdsx");
 		
 		chooser.setFileFilter(filter);
 		
@@ -432,7 +432,7 @@ public class DownloadGUI extends javax.swing.JFrame {
    
 		// Restrict the user to certain file formats
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
-			"gif");
+			"gif", "pdf", "vsdx");
 		
 		chooser.setFileFilter(filter);
 		
@@ -489,7 +489,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         }
     }
     
-    public void getRecentFiles(){
+    /*public void getRecentFiles(){
         refreshFileList();
         recentFiles.setModel(new javax.swing.AbstractListModel() {
             String[] strings = fileNames;
@@ -514,7 +514,7 @@ public class DownloadGUI extends javax.swing.JFrame {
         });
         jScrollPane4.setViewportView(fileListDisplay);
         
-    }
+    }*/
     /**
      * @param args the command line arguments
      */

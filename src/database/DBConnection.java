@@ -12,7 +12,7 @@ public class DBConnection {
 	
 	private Connection con;
 	
-	private static DBConnection instance = null;		// Singleton
+	public static DBConnection instance = null;		// Singleton
 	
 	
 	private DBConnection(){

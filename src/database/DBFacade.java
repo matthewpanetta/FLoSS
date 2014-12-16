@@ -29,7 +29,7 @@ public class DBFacade {
 	private PermissionDAO pd;
 	private UserDAO ud;
 	
-	private static DBFacade instance = null;
+	public static DBFacade instance = null;
 	
 	private DBFacade() {
 		fid = new FileDAO();
