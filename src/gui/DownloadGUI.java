@@ -489,32 +489,32 @@ public class DownloadGUI extends javax.swing.JFrame {
         }
     }
     
-    public void getRecentFiles(){
-        refreshFileList();
-        recentFiles.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = fileNames;
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane3.setViewportView(fileListDisplay);
-    }
-    
-    public void getRecentCollabs(){
-        fileList = serverAdapt.getCollaborations(user.getUserName());
-        fileNames = new String[fileList.size()];
-        for(int i = 0; i < fileList.size(); i++){
-            File f = fileList.get(i);
-            fileNames[i] = f.getFileName();
-        }
-        
-        recentCollabs.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = fileNames;
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane4.setViewportView(fileListDisplay);
-        
-    }
+//    public void getRecentFiles(){
+//        refreshFileList();
+//        recentFiles.setModel(new javax.swing.AbstractListModel() {
+//            String[] strings = fileNames;
+//            public int getSize() { return strings.length; }
+//            public Object getElementAt(int i) { return strings[i]; }
+//        });
+//        jScrollPane3.setViewportView(fileListDisplay);
+//    }
+//    
+//    public void getRecentCollabs(){
+//        fileList = serverAdapt.getCollaborations(user.getUserName());
+//        fileNames = new String[fileList.size()];
+//        for(int i = 0; i < fileList.size(); i++){
+//            File f = fileList.get(i);
+//            fileNames[i] = f.getFileName();
+//        }
+//        
+//        recentCollabs.setModel(new javax.swing.AbstractListModel() {
+//            String[] strings = fileNames;
+//            public int getSize() { return strings.length; }
+//            public Object getElementAt(int i) { return strings[i]; }
+//        });
+//        jScrollPane4.setViewportView(fileListDisplay);
+//        
+//    }
     /**
      * @param args the command line arguments
      */

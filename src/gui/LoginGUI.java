@@ -212,8 +212,8 @@ public class LoginGUI extends javax.swing.JFrame {
                 download.refreshFileList();
                 download.refreshFriends();
                 download.refreshFriendsList();
-                download.getRecentFiles();
-                download.getRecentCollabs();
+//                download.getRecentFiles();
+  //              download.getRecentCollabs();
                 download.setVisible(true);
                 dispose();
             }
