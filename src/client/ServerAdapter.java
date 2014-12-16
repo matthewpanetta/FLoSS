@@ -22,7 +22,7 @@ import java.security.spec.InvalidKeySpecException;
 public class ServerAdapter {
 	private DBFacade dbf;
 	private FMFacade fmf;
-	private static ServerAdapter instance = null;
+	public static ServerAdapter instance = null;
 	
 	private ServerAdapter() {
 		dbf = DBFacade.getInstance();
