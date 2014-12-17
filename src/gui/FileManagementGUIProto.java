@@ -26,6 +26,7 @@ public class FileManagementGUIProto extends javax.swing.JFrame {
     private File file;
     private User user;
     private List<File> fileList;
+    private List<User> friendsList;
 
     /**
      * Creates new form FileManagementGUIProto
@@ -33,6 +34,10 @@ public class FileManagementGUIProto extends javax.swing.JFrame {
     public FileManagementGUIProto() {
         serverAdapt = ServerAdapter.getInstance();
         initComponents();
+    }
+    
+    public void setFriendsList(List<User> friendsList) {
+        this.friendsList = friendsList;
     }
     
     public void setControlledGUI(TestGUI testGUI) {
@@ -360,7 +365,13 @@ public class FileManagementGUIProto extends javax.swing.JFrame {
     }//GEN-LAST:event_renameButtonMouseClicked
 
     private void permissionsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_permissionsButtonMouseClicked
-        
+        ViewPermissionGUI viewPermGUI = new ViewPermissionGUI();
+        viewPermGUI.setUser(user);
+        viewPermGUI.setFileID(file.getFileID());
+        viewPermGUI.setFile(file);
+        viewPermGUI.setFriends(friendsList);
+        viewPermGUI.getPermissions();
+        viewPermGUI.setVisible(true);
     }//GEN-LAST:event_permissionsButtonMouseClicked
 
     /**

@@ -92,10 +92,9 @@ public class TestGUI extends javax.swing.JFrame {
 
                 client.File theFile = serverAdapt.getFile(f.getName(), user);
                 AddPermissionGUI addPermGUI = new AddPermissionGUI();
-                addPermGUI.addUser(user);
-                addPermGUI.addFileID(theFile.getFileID());
-                addPermGUI.refreshFriends();
-                addPermGUI.refreshFriendsList();
+                addPermGUI.setUser(user);
+                addPermGUI.setFileID(theFile.getFileID());
+                addPermGUI.setFriendsList(friendsList);
                 addPermGUI.setVisible(true);
 
                 JOptionPane.showMessageDialog(this, "File uploaded successfully!");
@@ -164,6 +163,7 @@ public class TestGUI extends javax.swing.JFrame {
             fmgp.setFile(selectedFile);
             fmgp.setUser(user);
             fmgp.setControlledGUI(this);
+            fmgp.setFriendsList(friendsList);
             fmgp.refreshFileDetails();
             fmgp.setVisible(true);
     }
