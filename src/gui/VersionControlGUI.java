@@ -67,58 +67,70 @@ public class VersionControlGUI extends javax.swing.JFrame {
     }
     
     public void rollback() {
-        int buttonPicked = JOptionPane.showConfirmDialog(this, "Are you sure? You will lose any changes made after the selected rollback.\nYou will not be able to undo this action.", "Are you sure?", JOptionPane.YES_NO_OPTION);
-        
-        if(buttonPicked == 0) {
-            List<String> fileVersionList = versionModel.getSelectedValuesList();
-            String fileVersion = fileVersionList.get(0);
-            int revisionNum;
-        
-            if(fileVersion.equals("Original Version")) {
-                revisionNum = 0;
-            } else {
-                revisionNum = fileVersion.charAt(fileVersion.length() - 1) - 48;
-            }
+        List<String> fileVersionList = versionModel.getSelectedValuesList();
             
-            if(serverAdapt.rollbackFile(file, revisionNum, "temp//" + file.getFilePath() + "//" + file.getFileName() + "_" + revisionNum, file.getFilePath() + "\\" + file.getFileName())) {
-                JOptionPane.showMessageDialog(this, "File has been rolled back to selected version.");
-                
-                Date date = new Date(System.currentTimeMillis());
-                
-                fileList.remove(file);
-                
-                file.setUpdateNum(revisionNum + 1);
-                file.setLastModifier(user.getUserName());
-                file.setModifiedDate(date);
-                
-                fileList.add(file);
-                testGUI.setFileList(fileList);
-                refreshList();
-                
-            } else {
-                JOptionPane.showMessageDialog(this, "File could not be rolled back. Please try again later.");
+        if(fileVersionList.size() > 0) {
+            String fileVersion = fileVersionList.get(0);
+
+            if(fileVersion != null) {
+                int buttonPicked = JOptionPane.showConfirmDialog(this, "Are you sure? You will lose any changes made after the selected rollback.\nYou will not be able to undo this action.", "Are you sure?", JOptionPane.YES_NO_OPTION);
+
+                if(buttonPicked == 0) {
+                    int revisionNum;
+
+                    if(fileVersion.equals("Original Version")) {
+                        revisionNum = 0;
+                    } else {
+                        revisionNum = fileVersion.charAt(fileVersion.length() - 1) - 48;
+                    }
+
+                    if(serverAdapt.rollbackFile(file, revisionNum, "temp//" + file.getFilePath() + "//" + file.getFileName() + "_" + revisionNum, file.getFilePath() + "\\" + file.getFileName())) {
+                        JOptionPane.showMessageDialog(this, "File has been rolled back to selected version.");
+
+                        Date date = new Date(System.currentTimeMillis());
+
+                        fileList.remove(file);
+
+                        file.setUpdateNum(revisionNum + 1);
+                        file.setLastModifier(user.getUserName());
+                        file.setModifiedDate(date);
+
+                        fileList.add(file);
+                        testGUI.setFileList(fileList);
+                        refreshList();
+
+                    } else {
+                        JOptionPane.showMessageDialog(this, "File could not be rolled back. Please try again later.");
+                    }
+                }
             }
         }
     }
     
     public void download() {
         List<String> fileVersionList = versionModel.getSelectedValuesList();
+        
+        if(fileVersionList.size() > 0) {
             String fileVersion = fileVersionList.get(0);
-            int revisionNum;
-        
-            if(fileVersion.equals("Original Version")) {
-                revisionNum = 0;
-            } else {
-                revisionNum = fileVersion.charAt(fileVersion.length() - 1) - 48;
-            }
-        
             
-            String originalFilePath = file.getFilePath();
-            file.setFilePath("temp//" + file.getFilePath());
-        
-            testGUI.download(file, revisionNum);
-        
-            file.setFilePath(originalFilePath);
+            if(fileVersion != null) {
+                int revisionNum;
+
+                if(fileVersion.equals("Original Version")) {
+                    revisionNum = 0;
+                } else {
+                    revisionNum = fileVersion.charAt(fileVersion.length() - 1) - 48;
+                }
+
+
+                String originalFilePath = file.getFilePath();
+                file.setFilePath("temp//" + file.getFilePath());
+
+                testGUI.download(file, revisionNum);
+
+                file.setFilePath(originalFilePath);
+            }
+        }
     }
 
     /**

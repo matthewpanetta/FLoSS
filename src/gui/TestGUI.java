@@ -70,6 +70,16 @@ public class TestGUI extends javax.swing.JFrame {
         fileListFile.setListData(fileNames);
     }
     
+    public void refreshFriendsListTab() {
+        friendsNames = new String[friendsList.size()];
+            
+        for(User u : friendsList) {
+            friendsNames[friendsList.indexOf(u)] = u.getUserName();
+        }
+
+        friendsListFriends.setListData(friendsNames);
+    }
+    
     public void upload() {
         // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
         JFileChooser chooser = new JFileChooser();
@@ -133,6 +143,7 @@ public class TestGUI extends javax.swing.JFrame {
                 return "";
             }
         } else {
+            JOptionPane.showMessageDialog(this, "You must select a file from the list to download.");
             return "";
         }
     }
@@ -158,23 +169,27 @@ public class TestGUI extends javax.swing.JFrame {
     }
     
     public void getSelectedFile() {
-        List<String>selectedFileName = fileListFile.getSelectedValuesList();
+        List<String> selectedFileName = fileListFile.getSelectedValuesList();
         File selectedFile = null;
-            
-        for(File f : fileList) {
-            if(f.getFileName().equals(selectedFileName.get(0))) {
-                selectedFile = f;
-                break;
+        
+        if(selectedFileName.size() > 0) {
+            for(File f : fileList) {
+                if(f.getFileName().equals(selectedFileName.get(0))) {
+                    selectedFile = f;
+                    break;
+                }
             }
-        }
 
-        FileManagementGUIProto fmgp = new FileManagementGUIProto();
-        fmgp.setFile(selectedFile);
-        fmgp.setUser(user);
-        fmgp.setControlledGUI(this);
-        fmgp.setFriendsList(friendsList);
-        fmgp.refreshFileDetails();
-        fmgp.setVisible(true);
+            FileManagementGUIProto fmgp = new FileManagementGUIProto();
+            fmgp.setFile(selectedFile);
+            fmgp.setUser(user);
+            fmgp.setControlledGUI(this);
+            fmgp.setFriendsList(friendsList);
+            fmgp.refreshFileDetails();
+            fmgp.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "You must select a file from the list before accessing file management.");
+        }
     }
     
     public void recover() {
@@ -189,21 +204,90 @@ public class TestGUI extends javax.swing.JFrame {
     public void versionControl() {
         List<String>selectedFileName = fileListFile.getSelectedValuesList();
         File selectedFile = null;
-            
-        for(File f : fileList) {
-            if(f.getFileName().equals(selectedFileName.get(0))) {
-                selectedFile = f;
-                break;
+        
+        if(selectedFileName.size() > 0) {
+            for(File f : fileList) {
+                if(f.getFileName().equals(selectedFileName.get(0))) {
+                    selectedFile = f;
+                    break;
+                }
+            }
+
+            VersionControlGUI vcg = new VersionControlGUI();
+            vcg.setUser(user);
+            vcg.setControlledGUI(this);
+            vcg.setFile(selectedFile);
+            vcg.setFileList(fileList);
+            vcg.refreshList();
+            vcg.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "You must select a file from the list before accessing the version control.");
+        }
+    }
+    
+    public void addFriend() {
+        String friendUserName = JOptionPane.showInputDialog(this, "Enter your friend's username: ");
+        
+        if(friendUserName != null && friendUserName.length() > 0) {
+            if(!friendUserName.equals(user.getUserName())) {
+                User friend = serverAdapt.getUser(friendUserName);
+
+                if(friend != null) {
+                    if(serverAdapt.addFriend(user, friend)) {
+                        JOptionPane.showMessageDialog(this, "You are now friends with " + friendUserName + "!");
+                        friendsList.add(friend);
+                        refreshFriendsListTab();
+
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Either you are either already friends with " + friendUserName + ", or an error occured. Please try again.");
+                        addFriend();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "That username does not exist. Please try again.");
+                    addFriend();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "You cannot add yourself as a friend. Please try again.");
+                addFriend();
             }
         }
+    }
+    
+    public void removeFriend() {
+        List<String> friendUserNames = friendsListFriends.getSelectedValuesList();
+        User friend = null;
         
-        VersionControlGUI vcg = new VersionControlGUI();
-        vcg.setUser(user);
-        vcg.setControlledGUI(this);
-        vcg.setFile(selectedFile);
-        vcg.setFileList(fileList);
-        vcg.refreshList();
-        vcg.setVisible(true);
+        for(String friendName : friendUserNames) {
+            for(User u : friendsList) {
+                if(u.getUserName().equals(friendName)) {
+                    friend = u;
+                }
+            }
+
+            if(serverAdapt.removeFriend(user, friend)) {
+                JOptionPane.showMessageDialog(this, "Friend removed successfully.");
+                friendsList.remove(friend);
+                refreshFriendsListTab();
+            } else {
+                JOptionPane.showMessageDialog(this, "Friend not removed. Please try again.");
+            }
+        }
+    }
+    
+    public void viewProfile() {
+        List<String> selectedFriend = friendsListFriends.getSelectedValuesList();
+        User friend = null;
+        
+        if(selectedFriend.size() > 0) {
+            if(selectedFriend != null) {
+                friend = serverAdapt.getUser(selectedFriend.get(0));
+            }
+
+            ViewProfileGUI viewProfileGUI = new ViewProfileGUI();
+            viewProfileGUI.setUser(friend);
+            viewProfileGUI.refreshFields();
+            viewProfileGUI.setVisible(true);
+        }
     }
 
     /**
@@ -313,10 +397,10 @@ public class TestGUI extends javax.swing.JFrame {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator9)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(74, 74, 74)
                 .addComponent(welcomeMessage)
-                .addGap(73, 73, 73))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -361,7 +445,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addComponent(quickUploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
                 .addComponent(changeUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addComponent(logoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -377,7 +461,7 @@ public class TestGUI extends javax.swing.JFrame {
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Online Friends", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         friendsListHome.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "[O] - mp755", "[O] - tommy", "[A] - pewdiepie", "[O] - blazItFiggit", "[A] - lolzzer", "[O] - LukeExtendsVader" };
+            String[] strings = { "mp755", "tommy" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -406,7 +490,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(HomePanelLayout.createSequentialGroup()
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 12, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HomePanelLayout.createSequentialGroup()
                         .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
@@ -579,19 +663,39 @@ public class TestGUI extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        friendsListFriends.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                friendsListFriendsMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(friendsListFriends);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("General Friend Functionality"));
 
         removeFriendButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         removeFriendButton.setText("Remove Friend");
+        removeFriendButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeFriendButtonMouseClicked(evt);
+            }
+        });
 
         addFriendButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         addFriendButton.setText("Add Friend");
         addFriendButton.setToolTipText("");
+        addFriendButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addFriendButtonMouseClicked(evt);
+            }
+        });
 
         viewProfileButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         viewProfileButton.setText("View Profile");
+        viewProfileButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewProfileButtonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -874,11 +978,11 @@ public class TestGUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NavTabs, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(NavTabs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(NavTabs, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(NavTabs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -915,16 +1019,16 @@ public class TestGUI extends javax.swing.JFrame {
         }
         
         if(NavTabs.getSelectedIndex() == 2) {
-            friendsNames = new String[friendsList.size()];
-            
-            for(User u : friendsList) {
-                friendsNames[friendsList.indexOf(u)] = u.getUserName();
-            }
-            
-            friendsListFriends.setListData(friendsNames);
+            refreshFriendsListTab();
         }
         
         if(NavTabs.getSelectedIndex() == 3) {
+            if(fileFlag == 0) {
+                fileList = serverAdapt.getAllFiles(user.getUserName());
+                fileFlag = 1;
+            }
+            refreshFileList();
+            
             numFilesField.setText(Integer.toString(fileList.size()));
             numFriendsField.setText(Integer.toString(friendsList.size()));
             
@@ -971,6 +1075,24 @@ public class TestGUI extends javax.swing.JFrame {
     private void quickUploadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quickUploadButtonMouseClicked
         upload();
     }//GEN-LAST:event_quickUploadButtonMouseClicked
+
+    private void addFriendButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addFriendButtonMouseClicked
+        addFriend();
+    }//GEN-LAST:event_addFriendButtonMouseClicked
+
+    private void removeFriendButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeFriendButtonMouseClicked
+        removeFriend();
+    }//GEN-LAST:event_removeFriendButtonMouseClicked
+
+    private void viewProfileButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewProfileButtonMouseClicked
+        viewProfile();
+    }//GEN-LAST:event_viewProfileButtonMouseClicked
+
+    private void friendsListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendsListFriendsMouseClicked
+        if(evt.getClickCount() == 2) {
+            viewProfile();
+        }
+    }//GEN-LAST:event_friendsListFriendsMouseClicked
 
     /**
      * @param args the command line arguments

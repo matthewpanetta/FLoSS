@@ -57,22 +57,24 @@ public class RecoverFileGUI extends javax.swing.JFrame {
         List<String> fileName = fileModel.getSelectedValuesList();
         File file = null;
         
-        for(int j = 0; j < deletedFiles.size(); j++) {
-            if(deletedFiles.get(j).getFileName().equals(fileName.get(0))) {
-                file = deletedFiles.get(j);
-                break;
+        if(fileName.size() > 0) {
+            for(int j = 0; j < deletedFiles.size(); j++) {
+                if(deletedFiles.get(j).getFileName().equals(fileName.get(0))) {
+                    file = deletedFiles.get(j);
+                    break;
+                }
             }
-        }
-        
-        boolean recovered = serverAdapt.recoverFile(file);
 
-        if(recovered) {
-            JOptionPane.showMessageDialog(this, "File recovered successfully!");
-            fileList.add(file);
-            testGUI.setFileList(fileList);
-            testGUI.refreshFileList();
-        } else {
-            JOptionPane.showMessageDialog(this, "File could not be recovered. Please try again.");
+            boolean recovered = serverAdapt.recoverFile(file);
+
+            if(recovered) {
+                JOptionPane.showMessageDialog(this, "File recovered successfully!");
+                fileList.add(file);
+                testGUI.setFileList(fileList);
+                testGUI.refreshFileList();
+            } else {
+                JOptionPane.showMessageDialog(this, "File could not be recovered. Please try again.");
+            }
         }
     }
 
