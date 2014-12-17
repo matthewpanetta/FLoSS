@@ -302,13 +302,15 @@ public class RegisterGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseClicked
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        
-        String gender = String.valueOf(genderDropdown.getSelectedItem());
-        
+        int flag = 0;
         String[] credentials = new String[9];
         
+        
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+        String gender = String.valueOf(genderDropdown.getSelectedItem());
+
         credentials[0] = userName.getText();
         try {
             credentials[1] = PasswordHash.createHash(password.getPassword());
@@ -321,48 +323,73 @@ public class RegisterGUI extends javax.swing.JFrame {
         credentials[3] = firstName.getText();
         credentials[4] = midInit.getText();
         credentials[5] = lastName.getText();
-        
+
         if(gender.equals("Male")){gender = "M";}
         else if(gender.equals("Female")){gender = "F";}
         else{gender = "?";}
-        
+
         credentials[6] = gender;
-        //credentials[7] = birthDate.getText();
-        credentials[8] = email.getText();
+        credentials[7] = email.getText();
+        credentials[8] = emailConfirm.getText();
         
-        boolean passwordsMatch = false;
-        try {
-            if(PasswordHash.validatePassword(credentials[2], credentials[1])) {
-                passwordsMatch = true;
-            }
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeySpecException ex) {
-        	Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+        boolean emailsSame = false;
+        
+        if(credentials[7].equalsIgnoreCase(credentials[8])) {
+            emailsSame = true;
         }
-        
-        if(passwordsMatch) {
-            dateFormat.format(date);
-            //date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(credentials[7]);
-            
-            User user = new User(credentials[0], credentials[1], credentials[3], credentials[4], credentials[5], 
-                    credentials[6], credentials[8], date);
-            
-            
+
+        for(String s : credentials) {
+            if(s.equals("")) {
+                flag = 1;
+                break;
+            }
+        }
+
+        if(flag == 0) {
+
+            boolean passwordsMatch = false;
             try {
-                if(serverAdapt.register(user)) {
-                	JOptionPane.showMessageDialog(this, "You have successfully registered!");
-                	LoginGUI logInGUI = new LoginGUI();
-                    logInGUI.setVisible(true);
-                    dispose();          /* closes this frame now that the GUI frame is up */
-                } else {
-                	JOptionPane.showMessageDialog(this, "Username already in use. Please select a different username.");
+                if(PasswordHash.validatePassword(credentials[2], credentials[1])) {
+                    passwordsMatch = true;
                 }
             } catch (NoSuchAlgorithmException ex) {
                 Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvalidKeySpecException ex) {
-            	Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            if(passwordsMatch && emailsSame) {
+                dateFormat.format(date);
+                //date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(credentials[7]);
+
+                User user = new User(credentials[0], credentials[1], credentials[3], credentials[4].substring(0,1), credentials[5], 
+                        credentials[6], credentials[8], date);
+
+
+                try {
+                    if(serverAdapt.register(user)) {
+                            JOptionPane.showMessageDialog(this, "You have successfully registered!");
+                            LoginGUI logInGUI = new LoginGUI();
+                        logInGUI.setVisible(true);
+                        dispose();          /* closes this frame now that the GUI frame is up */
+                    } else {
+                            JOptionPane.showMessageDialog(this, "Username already in use. Please select a different username.");
+                    }
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(RegisterGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvalidKeySpecException ex) {
+                    Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch(com.mysql.jdbc.MysqlDataTruncation ex) {
+                    Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if(passwordsMatch) {
+                JOptionPane.showMessageDialog(this, "Your emails do not match.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Your passwords do not match.");
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "All fields are required for registration. Please try again.");
         }
     }//GEN-LAST:event_registerButtonMouseClicked
 

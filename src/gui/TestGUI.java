@@ -279,12 +279,18 @@ public class TestGUI extends javax.swing.JFrame {
         }
     }
     
-    public void viewProfile() {
-        List<String> selectedFriend = friendsListFriends.getSelectedValuesList();
+    public void viewProfile(int flag) {
+        List<String> selectedFriend;
+        
+        if(flag == 0) {
+            selectedFriend = friendsListFriends.getSelectedValuesList();
+        } else {
+            selectedFriend = friendsListHome.getSelectedValuesList();
+        }
         User friend = null;
         
-        if(selectedFriend.size() > 0) {
-            if(selectedFriend != null) {
+        if(selectedFriend != null) {
+            if(selectedFriend.size() > 0) {
                 friend = serverAdapt.getUser(selectedFriend.get(0));
             }
 
@@ -535,6 +541,11 @@ public class TestGUI extends javax.swing.JFrame {
             String[] strings = { "mp755", "tommy" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
+        });
+        friendsListHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                friendsListHomeMouseClicked(evt);
+            }
         });
         jScrollPane1.setViewportView(friendsListHome);
 
@@ -1171,12 +1182,12 @@ public class TestGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_removeFriendButtonMouseClicked
 
     private void viewProfileButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewProfileButtonMouseClicked
-        viewProfile();
+        viewProfile(0);
     }//GEN-LAST:event_viewProfileButtonMouseClicked
 
     private void friendsListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendsListFriendsMouseClicked
         if(evt.getClickCount() == 2) {
-            viewProfile();
+            viewProfile(0);
         }
     }//GEN-LAST:event_friendsListFriendsMouseClicked
 
@@ -1191,6 +1202,12 @@ public class TestGUI extends javax.swing.JFrame {
     private void deleteAccountButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteAccountButtonMouseClicked
         deleteAccount();
     }//GEN-LAST:event_deleteAccountButtonMouseClicked
+
+    private void friendsListHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendsListHomeMouseClicked
+        if(evt.getClickCount() == 2) {
+            viewProfile(1);
+        }
+    }//GEN-LAST:event_friendsListHomeMouseClicked
 
     /**
      * @param args the command line arguments

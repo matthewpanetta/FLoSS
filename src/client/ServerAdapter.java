@@ -166,7 +166,7 @@ public class ServerAdapter {
             return dbf.getAllFiles(userName);
         }
         
-        public boolean register(User user) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        public boolean register(User user) throws NoSuchAlgorithmException, InvalidKeySpecException, com.mysql.jdbc.MysqlDataTruncation {
             boolean isRegistered;
             
             isRegistered = dbf.registerUser(user);

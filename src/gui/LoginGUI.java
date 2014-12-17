@@ -233,25 +233,30 @@ public class LoginGUI extends javax.swing.JFrame {
         String username = usernameField.getText();
         char[] passwordCharArray = passwordField.getPassword();
         String password = new String(passwordCharArray);
+        
+        if(!username.equals("") && !password.equals("")) {
 
-        User u = new User(username, password);
-        try {
-            if(!serverAdapt.authenticateUser(u)){   // if authentication fails
-                JOptionPane.showMessageDialog(this, "Username or Password incorrect");
+            User u = new User(username, password);
+            try {
+                if(!serverAdapt.authenticateUser(u)){   // if authentication fails
+                    JOptionPane.showMessageDialog(this, "Username or Password incorrect");
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, "Login Successful");
+
+                    TestGUI testGUI = new TestGUI();
+                    testGUI.setUser(u);
+                    testGUI.refreshFriendsList();
+                    testGUI.setVisible(true);
+                    dispose();
+                }
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeySpecException ex) {
+                Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            else {
-                JOptionPane.showMessageDialog(this, "Login Successful");
-                
-                TestGUI testGUI = new TestGUI();
-                testGUI.setUser(u);
-                testGUI.refreshFriendsList();
-                testGUI.setVisible(true);
-                dispose();
-            }
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeySpecException ex) {
-            Logger.getLogger(LoginGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            JOptionPane.showMessageDialog(this, "You must enter a username and a password.");
         }
     }
     

@@ -286,37 +286,41 @@ public class UserDAO {
 			statement.setString(1, user.getUserName());
 		
 			result = statement.executeQuery();
-                        result.next();
-			String key = result.getString(2);
-                       
-			
-			if(PasswordHash.validatePassword(user.getPassword(), key)){
-                                //PreparedStatement getPass = connection.getConnection().prepareStatement("SELECT  password FROM user WHERE username = ?;");
-                               // getPass.setString(1, user.getUserName());
-                               // passResult = getPass.executeQuery();
-                                
-                                // user exists in database, now time to check the hashes
-                                // The reason I can't check the password in the same way as before above is because the hashes are salted
-                                // meaning that you have to use PasswordHash.validateHash() and you can't just hash it and compare
-                                // because due to the salted nature of these hashes, the same string 'test' will hash to different values
-                                // based on the random salt
-                                
-                                    authenticated = true;
-				
-                                    long currentTimestamp = System.currentTimeMillis();
-                                    Timestamp timestamp = new Timestamp(currentTimestamp);
-				
-				
-                                    statement = connection.getConnection().prepareStatement("UPDATE user SET checkIn = ? WHERE userName = ?;");
-                                    statement.setTimestamp(1, timestamp);
-                                    statement.setString(2, user.getUserName());
-				
-                                    statement.executeUpdate();
-                                
-                                
-			} else {
-				authenticated = false;
-			}
+                        if(result.isBeforeFirst()) {
+                            result.next();
+                            String key = result.getString(2);
+
+
+                            if(PasswordHash.validatePassword(user.getPassword(), key)){
+                                    //PreparedStatement getPass = connection.getConnection().prepareStatement("SELECT  password FROM user WHERE username = ?;");
+                                   // getPass.setString(1, user.getUserName());
+                                   // passResult = getPass.executeQuery();
+
+                                    // user exists in database, now time to check the hashes
+                                    // The reason I can't check the password in the same way as before above is because the hashes are salted
+                                    // meaning that you have to use PasswordHash.validateHash() and you can't just hash it and compare
+                                    // because due to the salted nature of these hashes, the same string 'test' will hash to different values
+                                    // based on the random salt
+
+                                        authenticated = true;
+
+                                        long currentTimestamp = System.currentTimeMillis();
+                                        Timestamp timestamp = new Timestamp(currentTimestamp);
+
+
+                                        statement = connection.getConnection().prepareStatement("UPDATE user SET checkIn = ? WHERE userName = ?;");
+                                        statement.setTimestamp(1, timestamp);
+                                        statement.setString(2, user.getUserName());
+
+                                        statement.executeUpdate();
+
+
+                            } else {
+                                    authenticated = false;
+                            }
+                        } else {
+                            authenticated = false;
+                        }
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
