@@ -42,8 +42,10 @@ public class AddPermissionGUI extends javax.swing.JFrame {
     public void setFriendsList(List<User> friends) {
         permNames = new ArrayList<String>();
         
-        for(Permission p : permList) {
-            permNames.add(p.getUserName());
+        if(permList != null) {
+            for(Permission p : permList) {
+                permNames.add(p.getUserName());
+            }
         }
         
         friendsList = friends;
@@ -81,9 +83,12 @@ public class AddPermissionGUI extends javax.swing.JFrame {
             
             if(serverAdapt.addPermission(p)) {
                 JOptionPane.showMessageDialog(this, "Permission successfully added to the file.");
-                permList.add(p);
-                vpg.setPermList(permList);
-                vpg.refreshPermissions();
+                
+                if(permList != null) {
+                    permList.add(p);
+                    vpg.setPermList(permList);
+                    vpg.refreshPermissions();
+                }
                 
             } else {
                 JOptionPane.showMessageDialog(this, "Permission has not been added to the file. Please try again.");
@@ -169,9 +174,9 @@ public class AddPermissionGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(noPermissionsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(addPermissionsButton))
+                        .addComponent(addPermissionsButton)
+                        .addGap(38, 38, 38)
+                        .addComponent(noPermissionsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -190,8 +195,8 @@ public class AddPermissionGUI extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(addPermissionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                    .addComponent(noPermissionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(noPermissionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(addPermissionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 

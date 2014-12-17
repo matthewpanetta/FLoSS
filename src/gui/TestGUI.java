@@ -97,8 +97,10 @@ public class TestGUI extends javax.swing.JFrame {
                 addPermGUI.setVisible(true);
 
                 JOptionPane.showMessageDialog(this, "File uploaded successfully!");
-                this.fileList.add(theFile);
-                refreshFileList();
+                if(this.fileList != null) {
+                    this.fileList.add(theFile);
+                    refreshFileList();
+                }
             }
         }
     }
@@ -329,6 +331,11 @@ public class TestGUI extends javax.swing.JFrame {
 
         quickUploadButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         quickUploadButton.setText("Quick Upload");
+        quickUploadButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                quickUploadButtonMouseClicked(evt);
+            }
+        });
 
         logoutButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         logoutButton.setText("Logout");
@@ -354,7 +361,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addComponent(quickUploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
                 .addComponent(changeUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(logoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -399,7 +406,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(HomePanelLayout.createSequentialGroup()
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 12, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HomePanelLayout.createSequentialGroup()
                         .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
@@ -654,7 +661,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout FriendsPanelLayout = new javax.swing.GroupLayout(FriendsPanel);
@@ -960,6 +967,10 @@ public class TestGUI extends javax.swing.JFrame {
     private void versionControlButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_versionControlButtonMouseClicked
         versionControl();
     }//GEN-LAST:event_versionControlButtonMouseClicked
+
+    private void quickUploadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quickUploadButtonMouseClicked
+        upload();
+    }//GEN-LAST:event_quickUploadButtonMouseClicked
 
     /**
      * @param args the command line arguments
