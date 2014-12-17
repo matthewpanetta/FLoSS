@@ -413,7 +413,8 @@ public class DownloadGUI extends javax.swing.JFrame {
         if(file == null) {
             JOptionPane.showMessageDialog(this, "You do not have permission to rollback this file. Please contact the file's owner.");
         } else {        
-            DLPrevVersionGUI dlPrevVersionGUI = new DLPrevVersionGUI();
+            DLPrevVersionGUI dlPrevVersionGUI;
+            dlPrevVersionGUI = new DLPrevVersionGUI();
             dlPrevVersionGUI.setFile(file);
             dlPrevVersionGUI.setUser(user);
             dlPrevVersionGUI.setDownloadGUI(this);

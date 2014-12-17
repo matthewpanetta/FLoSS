@@ -307,6 +307,14 @@ public class ServerAdapter {
             return success;
         }
         
+        public boolean deauthenticate(User user) {
+            return dbf.deauthenticate(user);
+        }
+        
+        public boolean isOnline(String userName) {
+            return dbf.isOnline(userName);
+        }
+        
         public static void main(String[] args) {
             ServerAdapter sa = ServerAdapter.getInstance();
 		/*User u = new User("mp755", "test123");
