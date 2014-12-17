@@ -238,14 +238,18 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
 
     private void removePermButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removePermButtonMouseClicked
         List<String> friendNames = friendsModel.getSelectedValuesList();
-        Permission permission = new Permission(friendNames.get(0), fileID, 1);
-        if(serverAdapt.removePermission(permission)) {
-            JOptionPane.showMessageDialog(this, "Permission successfully deleted.");
+        if(!friendNames.get(0).equals(file.getOwner())) {
+            Permission permission = new Permission(friendNames.get(0), fileID, 1);
+            if(serverAdapt.removePermission(permission)) {
+                JOptionPane.showMessageDialog(this, "Permission successfully deleted.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Permission was not deleted. Please try again.");
+            }
+
+            getPermissions();
         } else {
-            JOptionPane.showMessageDialog(this, "Permission was not deleted. Please try again.");
+            JOptionPane.showMessageDialog(this, "You cannot remove the owner of the file. Try deleting instead.");
         }
-        
-        getPermissions();
     }//GEN-LAST:event_removePermButtonMouseClicked
 
     private void goBackButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_goBackButtonMouseClicked

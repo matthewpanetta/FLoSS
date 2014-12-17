@@ -95,19 +95,22 @@ public class FileManagementGUIProto extends javax.swing.JFrame {
     }
     
     public void delete() {
-        if(!file.getOwner().equals(user.getUserName())) {
-            JOptionPane.showMessageDialog(this, "You do not have permission to delete this file.");
-        } else {
-            boolean deletedFile = serverAdapt.deleteFile(file);
-            if(deletedFile){
-                JOptionPane.showMessageDialog(this, "File deleted!");
-
-                fileList.remove(file);
-                testGUI.setFileList(fileList);
-                testGUI.refreshFileList();
-                this.dispose();
+        int option = JOptionPane.showConfirmDialog(this, "Are you sure you would like to delete the file?", "Delete File", JOptionPane.YES_NO_OPTION);
+        if(option == 0) {
+            if(!file.getOwner().equals(user.getUserName())) {
+                JOptionPane.showMessageDialog(this, "You do not have permission to delete this file.");
             } else {
-                JOptionPane.showMessageDialog(this, "File not deleted. Please try again.");
+                boolean deletedFile = serverAdapt.deleteFile(file);
+                if(deletedFile){
+                    JOptionPane.showMessageDialog(this, "File deleted!");
+
+                    fileList.remove(file);
+                    testGUI.setFileList(fileList);
+                    testGUI.refreshFileList();
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "File not deleted. Please try again.");
+                }
             }
         }
     }
