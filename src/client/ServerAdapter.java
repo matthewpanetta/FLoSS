@@ -300,7 +300,7 @@ public class ServerAdapter {
         public boolean deleteUser(User user) {
             boolean success = false;
             
-            if(dbf.removeUser(user) && fmf.removeUser(user.getUserName())) {
+            if(dbf.removeUser(user)) {
                 success = true;
             }
             

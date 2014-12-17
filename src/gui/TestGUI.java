@@ -8,9 +8,14 @@ package gui;
 import client.File;
 import client.ServerAdapter;
 import client.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -289,6 +294,72 @@ public class TestGUI extends javax.swing.JFrame {
             viewProfileGUI.setVisible(true);
         }
     }
+    
+    public void changePassword() {
+        try {
+            JPasswordField pf = new JPasswordField();
+            //String password = JOptionPane.showInputDialog(this, "Enter your current password:");
+            int choice = JOptionPane.showConfirmDialog(this, pf, "Enter Password", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            
+            if(choice == JOptionPane.OK_OPTION) {
+                String password = new String(pf.getPassword());
+                
+                User test = new User(user.getUserName(), password);
+
+                if(serverAdapt.authenticateUser(test)) {
+                    choice = JOptionPane.showConfirmDialog(this, pf, "Enter New Password", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                    
+                    if(choice == JOptionPane.OK_OPTION) {
+                        String newPassword = new String(pf.getPassword());
+                        
+                        if(serverAdapt.updateUserPassword(user.getUserName(), newPassword)) {
+                            JOptionPane.showMessageDialog(this, "Password updated.");
+                            user.setPassword(newPassword);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Password could not be updated at this time. Please try again.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Incorrect password. Please try again.");
+                }
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException ex) {
+            Logger.getLogger(TestGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void updateInfo() {
+        user.setFirstName(firstNameField.getText());
+        user.setLastName(lastNameField.getText());
+        user.setEmail(emailField.getText());
+        user.setGender(genderField.getText().substring(0,1).toUpperCase());
+        
+        serverAdapt.updateUser(user);
+        
+        JOptionPane.showMessageDialog(this, "Profile Updated!");
+        firstNameField.setText(user.getFirstName());
+        lastNameField.setText(user.getLastName());
+        genderField.setText(user.getGender());
+        emailField.setText(user.getEmail());
+    }
+    
+    public void deleteAccount() {
+        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you would like to delete your account? All of your files will be removed from the server.\nThis cannot be undone.", "Are you sure?", JOptionPane.YES_NO_OPTION);
+        
+        if(choice == 0) {
+            boolean deleted = serverAdapt.deleteUser(user);
+            
+            if(deleted) {
+                LoginGUI logInGUI = new LoginGUI();
+                logInGUI.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Your account could not be deleted. Please try again later.");
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -342,7 +413,7 @@ public class TestGUI extends javax.swing.JFrame {
         profileSettings = new javax.swing.JPanel();
         changePasswordButton = new javax.swing.JButton();
         updateInfoButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        deleteAccountButton = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JSeparator();
         jPanel5 = new javax.swing.JPanel();
         profileWelcomeMessage = new javax.swing.JLabel();
@@ -787,12 +858,27 @@ public class TestGUI extends javax.swing.JFrame {
 
         changePasswordButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         changePasswordButton.setText("New Password");
+        changePasswordButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                changePasswordButtonMouseClicked(evt);
+            }
+        });
 
         updateInfoButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         updateInfoButton.setText("Update Info");
+        updateInfoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                updateInfoButtonMouseClicked(evt);
+            }
+        });
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton1.setText("Delete Account");
+        deleteAccountButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        deleteAccountButton.setText("Delete Account");
+        deleteAccountButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteAccountButtonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout profileSettingsLayout = new javax.swing.GroupLayout(profileSettings);
         profileSettings.setLayout(profileSettingsLayout);
@@ -803,7 +889,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addComponent(updateInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(deleteAccountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         profileSettingsLayout.setVerticalGroup(
@@ -811,7 +897,7 @@ public class TestGUI extends javax.swing.JFrame {
             .addGroup(profileSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(changePasswordButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(updateInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(deleteAccountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         profileWelcomeMessage.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -1094,6 +1180,18 @@ public class TestGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_friendsListFriendsMouseClicked
 
+    private void changePasswordButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changePasswordButtonMouseClicked
+        changePassword();
+    }//GEN-LAST:event_changePasswordButtonMouseClicked
+
+    private void updateInfoButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_updateInfoButtonMouseClicked
+        updateInfo();
+    }//GEN-LAST:event_updateInfoButtonMouseClicked
+
+    private void deleteAccountButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteAccountButtonMouseClicked
+        deleteAccount();
+    }//GEN-LAST:event_deleteAccountButtonMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -1133,6 +1231,7 @@ public class TestGUI extends javax.swing.JFrame {
     private javax.swing.JButton addFriendButton;
     private javax.swing.JButton changePasswordButton;
     private javax.swing.JButton changeUserButton;
+    private javax.swing.JButton deleteAccountButton;
     private javax.swing.JButton downloadButton;
     private javax.swing.JLabel email;
     private javax.swing.JTextField emailField;
@@ -1145,7 +1244,6 @@ public class TestGUI extends javax.swing.JFrame {
     private javax.swing.JLabel gender;
     private javax.swing.JTextField genderField;
     private javax.swing.JPanel generalFileFunctionality;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
