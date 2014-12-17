@@ -5,10 +5,13 @@
  */
 package gui;
 
+import client.File;
 import client.ServerAdapter;
 import client.User;
 import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -18,18 +21,32 @@ public class TestGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;
     private User user;
     private List<User> friendsList;
+    private List<File> fileList;
     private String[] onlineFriendsNames;
     private String[] friendsNames;
+    private String[] fileNames;
+    private int fileFlag;
     /**
      * Creates new form TestGUI
      */
     public TestGUI() {
         serverAdapt = ServerAdapter.getInstance();
+        fileFlag = 0;
         initComponents();
     }
     
     public void setUser(User user) {
-        this.user = user;
+        this.user = serverAdapt.getUser(user.getUserName());
+        welcomeMessage.setText("Welcome, " + this.user.getFirstName() + " " + this.user.getLastName());
+        profileWelcomeMessage.setText(this.user.getFirstName() + " " + this.user.getLastName() + "'s Profile");
+    }
+    
+    public List<File> getFileList() {
+        return fileList;
+    }
+    
+    public void setFileList(List<File> fileList) {
+        this.fileList = fileList;
     }
     
     public void refreshFriendsList() {
@@ -44,6 +61,112 @@ public class TestGUI extends javax.swing.JFrame {
         
         friendsListHome.setListData(onlineFriendsNames);
     }
+    
+    public void refreshFileList() {
+        fileNames = new String[fileList.size()];
+        for(File f : fileList) {
+            fileNames[fileList.indexOf(f)] = f.getFileName();
+        }
+            
+        fileListFile.setListData(fileNames);
+    }
+    
+    public void upload() {
+        // Opens a file chooser dialog GUI where the user selects which file(s) they would like to upload.
+        JFileChooser chooser = new JFileChooser();
+
+        // Restrict the user to certain file formats
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", 
+                "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg", "gif");
+
+        chooser.setFileFilter(filter);
+
+        // Allow the user to upload multiple files.
+        chooser.setMultiSelectionEnabled(true);
+
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            java.io.File[] fileList = chooser.getSelectedFiles();
+            for(java.io.File f : fileList){                       
+                serverAdapt.upload(user, f.getPath(), user.getUserName());
+
+                client.File theFile = serverAdapt.getFile(f.getName(), user);
+                AddPermissionGUI addPermGUI = new AddPermissionGUI();
+                addPermGUI.addUser(user);
+                addPermGUI.addFileID(theFile.getFileID());
+                addPermGUI.refreshFriends();
+                addPermGUI.refreshFriendsList();
+                addPermGUI.setVisible(true);
+
+                JOptionPane.showMessageDialog(this, "File uploaded successfully!");
+                this.fileList.add(theFile);
+                refreshFileList();
+            }
+        }
+    }
+    
+    public String download(File toDownload, int flag) {        
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("All Acceptable Files", "doc", "docx", "xlsx", "pptx", "txt", "png", "jpg",
+            "gif");
+        chooser.setFileFilter(filter);
+        chooser.showSaveDialog(this);
+        
+        if(toDownload == null) {
+            List<String> selected = fileListFile.getSelectedValuesList();          
+            
+            for(File f : fileList) {
+                if(f.getFileName().equals(selected.get(0))) {
+                    toDownload = f;
+                    break;
+                }
+            }
+        }
+        
+        java.io.File clientFile = chooser.getSelectedFile();
+        String clientPath = clientFile.getAbsolutePath();
+            
+        return downloadFileFromServer(toDownload, clientPath, flag);
+    }
+    
+    public String downloadFileFromServer(File toDownload, String clientPath, int flag) {
+            String pathToSave = toDownload.getFilePath() + "//" + toDownload.getFileName();
+
+            // Get the file extension. If the user did not specify a file extension, add it onto the file name.
+            int extensionIndex = pathToSave.lastIndexOf(".");
+            String extension = pathToSave.substring(extensionIndex);
+            if(!clientPath.endsWith(extension)) {
+                clientPath += extension;
+            }
+            
+            if(serverAdapt.download(user, pathToSave, clientPath, flag)) {
+                JOptionPane.showMessageDialog(this, "File successfully downloaded!");
+            }
+
+            else {
+                JOptionPane.showMessageDialog(this, "Could not retrieve file. Please try again");
+            }
+            return clientPath;
+    }
+    
+    public void getSelectedFile() {
+        List<String>selectedFileName = fileListFile.getSelectedValuesList();
+        File selectedFile = null;
+            
+            for(File f : fileList) {
+                if(f.getFileName().equals(selectedFileName.get(0))) {
+                    selectedFile = f;
+                    break;
+                }
+            }
+            
+            FileManagementGUIProto fmgp = new FileManagementGUIProto();
+            fmgp.setFile(selectedFile);
+            fmgp.setUser(user);
+            fmgp.setControlledGUI(this);
+            fmgp.refreshFileDetails();
+            fmgp.setVisible(true);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,44 +179,45 @@ public class TestGUI extends javax.swing.JFrame {
 
         NavTabs = new javax.swing.JTabbedPane();
         HomePanel = new javax.swing.JPanel();
-        WelcomeMessage = new javax.swing.JLabel();
+        welcomeMessage = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         friendsListHome = new javax.swing.JList();
-        LogoutButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        ChangeUserButton = new javax.swing.JButton();
+        logoutButton = new javax.swing.JButton();
+        questionLabel = new javax.swing.JLabel();
+        quickUploadButton = new javax.swing.JButton();
+        changeUserButton = new javax.swing.JButton();
         FilePanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList();
-        jPanel1 = new javax.swing.JPanel();
-        jButton4 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jButton5 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        fileListFile = new javax.swing.JList();
+        generalFileFunctionality = new javax.swing.JPanel();
+        uploadButton = new javax.swing.JButton();
+        downloadButton = new javax.swing.JButton();
+        manageButton = new javax.swing.JButton();
+        fileRecovery = new javax.swing.JPanel();
+        recoverButton = new javax.swing.JButton();
+        versionControlButton = new javax.swing.JButton();
         FriendsPanel = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         friendsListFriends = new javax.swing.JList();
-        jPanel5 = new javax.swing.JPanel();
+        generalFriendFunctionality = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
+        removeFriendButton = new javax.swing.JButton();
+        addFriendButton = new javax.swing.JButton();
+        viewProfileButton = new javax.swing.JButton();
         ProfilePanel = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        profileWelcomeMessage = new javax.swing.JLabel();
+        profileSettings = new javax.swing.JPanel();
+        changePasswordButton = new javax.swing.JButton();
+        updateInfoButton = new javax.swing.JButton();
+        firstName = new javax.swing.JLabel();
+        lastName = new javax.swing.JLabel();
+        gender = new javax.swing.JLabel();
+        email = new javax.swing.JLabel();
+        firstNameField = new javax.swing.JTextField();
+        lastNameField = new javax.swing.JTextField();
+        genderField = new javax.swing.JTextField();
+        emailField = new javax.swing.JTextField();
         MenuBar = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
         UploadItem = new javax.swing.JMenuItem();
@@ -119,8 +243,8 @@ public class TestGUI extends javax.swing.JFrame {
 
         HomePanel.setPreferredSize(new java.awt.Dimension(0, 0));
 
-        WelcomeMessage.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        WelcomeMessage.setText("Welcome, Eugene Nitka!");
+        welcomeMessage.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        welcomeMessage.setText("Welcome, Eugene Nitka!");
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Online Friends", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
@@ -131,25 +255,25 @@ public class TestGUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(friendsListHome);
 
-        LogoutButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        LogoutButton.setText("Logout");
-        LogoutButton.addActionListener(new java.awt.event.ActionListener() {
+        logoutButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        logoutButton.setText("Logout");
+        logoutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LogoutButtonActionPerformed(evt);
+                logoutButtonActionPerformed(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("What would you like to do, dude?");
+        questionLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        questionLabel.setText("What would you like to do?");
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton2.setText("Quick Upload");
+        quickUploadButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        quickUploadButton.setText("Quick Upload");
 
-        ChangeUserButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        ChangeUserButton.setText("Change User");
-        ChangeUserButton.addActionListener(new java.awt.event.ActionListener() {
+        changeUserButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        changeUserButton.setText("Change User");
+        changeUserButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ChangeUserButtonActionPerformed(evt);
+                changeUserButtonActionPerformed(evt);
             }
         });
 
@@ -161,40 +285,39 @@ public class TestGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(HomePanelLayout.createSequentialGroup()
-                        .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HomePanelLayout.createSequentialGroup()
-                                .addComponent(WelcomeMessage)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane1)
                         .addContainerGap())
                     .addGroup(HomePanelLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(HomePanelLayout.createSequentialGroup()
-                                .addGap(130, 130, 130)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(148, 148, 148)
+                        .addComponent(quickUploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(HomePanelLayout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addComponent(ChangeUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(LogoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 87, Short.MAX_VALUE))
+                .addGap(69, 69, 69)
+                .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(HomePanelLayout.createSequentialGroup()
+                        .addComponent(changeUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(logoutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(welcomeMessage))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, HomePanelLayout.createSequentialGroup()
+                .addContainerGap(106, Short.MAX_VALUE)
+                .addComponent(questionLabel)
+                .addGap(106, 106, 106))
         );
         HomePanelLayout.setVerticalGroup(
             HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(HomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(WelcomeMessage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(welcomeMessage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(questionLabel)
+                .addGap(23, 23, 23)
+                .addComponent(quickUploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(HomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ChangeUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                    .addComponent(LogoutButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(logoutButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(changeUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
                 .addContainerGap())
@@ -204,63 +327,85 @@ public class TestGUI extends javax.swing.JFrame {
 
         jScrollPane2.setBorder(javax.swing.BorderFactory.createTitledBorder("My Files and Collaborations"));
 
-        jList2.setModel(new javax.swing.AbstractListModel() {
+        fileListFile.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList2);
+        fileListFile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fileListFileMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(fileListFile);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("General File Functionality"));
+        generalFileFunctionality.setBorder(javax.swing.BorderFactory.createTitledBorder("General File Functionality"));
 
-        jButton4.setText("Upload");
-
-        jButton6.setText("Refresh List");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+        uploadButton.setText("Upload");
+        uploadButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                uploadButtonMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        downloadButton.setText("Download");
+        downloadButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                downloadButtonMouseClicked(evt);
+            }
+        });
+
+        manageButton.setText("Manage This File");
+        manageButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                manageButtonMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout generalFileFunctionalityLayout = new javax.swing.GroupLayout(generalFileFunctionality);
+        generalFileFunctionality.setLayout(generalFileFunctionalityLayout);
+        generalFileFunctionalityLayout.setHorizontalGroup(
+            generalFileFunctionalityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(generalFileFunctionalityLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(180, Short.MAX_VALUE))
+                .addComponent(uploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
+                .addComponent(manageButton))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+        generalFileFunctionalityLayout.setVerticalGroup(
+            generalFileFunctionalityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(generalFileFunctionalityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(uploadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(manageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("File Recovery"));
+        fileRecovery.setBorder(javax.swing.BorderFactory.createTitledBorder("File Recovery"));
 
-        jButton5.setText("Recover Files");
+        recoverButton.setText("Recover Files");
 
-        jButton7.setText("Version Control");
+        versionControlButton.setText("Version Control");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout fileRecoveryLayout = new javax.swing.GroupLayout(fileRecovery);
+        fileRecovery.setLayout(fileRecoveryLayout);
+        fileRecoveryLayout.setHorizontalGroup(
+            fileRecoveryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(fileRecoveryLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton7)
+                .addComponent(recoverButton, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46)
+                .addComponent(versionControlButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        fileRecoveryLayout.setVerticalGroup(
+            fileRecoveryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(fileRecoveryLayout.createSequentialGroup()
+                .addGroup(fileRecoveryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(recoverButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(versionControlButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout FilePanelLayout = new javax.swing.GroupLayout(FilePanel);
@@ -268,18 +413,17 @@ public class TestGUI extends javax.swing.JFrame {
         FilePanelLayout.setHorizontalGroup(
             FilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(generalFileFunctionality, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(fileRecovery, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         FilePanelLayout.setVerticalGroup(
             FilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(FilePanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(generalFileFunctionality, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fileRecovery, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         NavTabs.addTab("My Files", FilePanel);
@@ -295,12 +439,12 @@ public class TestGUI extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("General Friend Functionality"));
 
-        jButton8.setText("Remove Friend");
+        removeFriendButton.setText("Remove Friend");
 
-        jButton9.setText("Add Friend");
-        jButton9.setToolTipText("");
+        addFriendButton.setText("Add Friend");
+        addFriendButton.setToolTipText("");
 
-        jButton10.setText("View Profile");
+        viewProfileButton.setText("View Profile");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -308,29 +452,29 @@ public class TestGUI extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addFriendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                .addComponent(jButton8)
+                .addComponent(removeFriendButton)
                 .addGap(45, 45, 45)
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(viewProfileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(addFriendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(removeFriendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(viewProfileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout generalFriendFunctionalityLayout = new javax.swing.GroupLayout(generalFriendFunctionality);
+        generalFriendFunctionality.setLayout(generalFriendFunctionalityLayout);
+        generalFriendFunctionalityLayout.setHorizontalGroup(
+            generalFriendFunctionalityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+        generalFriendFunctionalityLayout.setVerticalGroup(
+            generalFriendFunctionalityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, generalFriendFunctionalityLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -340,14 +484,14 @@ public class TestGUI extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane3)
-            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(generalFriendFunctionality, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(generalFriendFunctionality, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout FriendsPanelLayout = new javax.swing.GroupLayout(FriendsPanel);
@@ -363,61 +507,56 @@ public class TestGUI extends javax.swing.JFrame {
 
         NavTabs.addTab("My Friends", FriendsPanel);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel2.setText("username's profile");
+        profileWelcomeMessage.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        profileWelcomeMessage.setText("username's profile");
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Profile Settings"));
+        profileSettings.setBorder(javax.swing.BorderFactory.createTitledBorder("Profile Settings"));
 
-        jButton11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jButton11.setText("change password");
+        changePasswordButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        changePasswordButton.setText("change password");
 
-        jButton12.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jButton12.setText("update profile info");
+        updateInfoButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        updateInfoButton.setText("update profile info");
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jButton11)
+        javax.swing.GroupLayout profileSettingsLayout = new javax.swing.GroupLayout(profileSettings);
+        profileSettings.setLayout(profileSettingsLayout);
+        profileSettingsLayout.setHorizontalGroup(
+            profileSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(profileSettingsLayout.createSequentialGroup()
+                .addComponent(changePasswordButton)
                 .addGap(18, 18, 18)
-                .addComponent(jButton12)
-                .addGap(0, 34, Short.MAX_VALUE))
+                .addComponent(updateInfoButton)
+                .addGap(0, 100, Short.MAX_VALUE))
         );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+        profileSettingsLayout.setVerticalGroup(
+            profileSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(profileSettingsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton12)
-                    .addComponent(jButton11))
+                .addGroup(profileSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(updateInfoButton)
+                    .addComponent(changePasswordButton))
                 .addContainerGap(58, Short.MAX_VALUE))
         );
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel4.setText("first name:");
+        firstName.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        firstName.setText("first name:");
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel6.setText("last name:");
+        lastName.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lastName.setText("last name:");
 
-        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel8.setText("gender:");
+        gender.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        gender.setText("gender:");
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel10.setText("email:");
+        email.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        email.setText("email:");
 
-        jTextField1.setText("users name");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
+        firstNameField.setText("users name");
 
-        jTextField2.setText("jTextField2");
+        lastNameField.setText("jTextField2");
 
-        jTextField3.setText("jTextField3");
+        genderField.setText("jTextField3");
 
-        jTextField4.setText("jTextField4");
+        emailField.setText("jTextField4");
 
         javax.swing.GroupLayout ProfilePanelLayout = new javax.swing.GroupLayout(ProfilePanel);
         ProfilePanel.setLayout(ProfilePanelLayout);
@@ -426,28 +565,28 @@ public class TestGUI extends javax.swing.JFrame {
             .addGroup(ProfilePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(profileSettings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(ProfilePanelLayout.createSequentialGroup()
                         .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                            .addComponent(profileWelcomeMessage, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, ProfilePanelLayout.createSequentialGroup()
                                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(ProfilePanelLayout.createSequentialGroup()
-                                        .addComponent(jLabel6)
+                                        .addComponent(lastName)
                                         .addGap(18, 18, 18))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProfilePanelLayout.createSequentialGroup()
                                         .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel10))
+                                            .addComponent(gender)
+                                            .addComponent(email))
                                         .addGap(40, 40, 40)))
                                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                                    .addComponent(jTextField3)
-                                    .addComponent(jTextField4)))
+                                    .addComponent(lastNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+                                    .addComponent(genderField)
+                                    .addComponent(emailField)))
                             .addGroup(ProfilePanelLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                                .addComponent(firstName)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField1)))
+                                .addComponent(firstNameField)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -455,25 +594,25 @@ public class TestGUI extends javax.swing.JFrame {
             ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ProfilePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
+                .addComponent(profileWelcomeMessage)
                 .addGap(29, 29, 29)
                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(firstName)
+                    .addComponent(firstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lastName)
+                    .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(gender)
+                    .addComponent(genderField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(ProfilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(email)
+                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(146, 146, 146)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(profileSettings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -522,7 +661,7 @@ public class TestGUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void LogoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogoutButtonActionPerformed
+    private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         // TODO add your handling code here:
         //JOptionPane.showMessageDialog(this, "Login Successful");
         int i = JOptionPane.showConfirmDialog(this, "Are you sure you would like to logout and exit?", "Logout", 0);
@@ -530,13 +669,9 @@ public class TestGUI extends javax.swing.JFrame {
             serverAdapt.deauthenticate(user);
             dispose();
         }
-    }//GEN-LAST:event_LogoutButtonActionPerformed
+    }//GEN-LAST:event_logoutButtonActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void ChangeUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChangeUserButtonActionPerformed
+    private void changeUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUserButtonActionPerformed
         int i = JOptionPane.showConfirmDialog(this, "Are you sure you would like to logout?", "Wrong User", 0);
         if (i == 0){
             serverAdapt.deauthenticate(user);
@@ -544,13 +679,17 @@ public class TestGUI extends javax.swing.JFrame {
             login.setVisible(true);
             dispose();
         }
-    }//GEN-LAST:event_ChangeUserButtonActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_changeUserButtonActionPerformed
 
     private void NavTabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_NavTabsStateChanged
+        if(NavTabs.getSelectedIndex() == 1) {
+            if(fileFlag == 0) {
+                fileList = serverAdapt.getAllFiles(user.getUserName());
+                fileFlag = 1;
+            }
+            refreshFileList();
+        }
+        
         if(NavTabs.getSelectedIndex() == 2) {
             friendsNames = new String[friendsList.size()];
             
@@ -561,6 +700,24 @@ public class TestGUI extends javax.swing.JFrame {
             friendsListFriends.setListData(friendsNames);
         }
     }//GEN-LAST:event_NavTabsStateChanged
+
+    private void uploadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_uploadButtonMouseClicked
+        upload();
+    }//GEN-LAST:event_uploadButtonMouseClicked
+
+    private void downloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadButtonMouseClicked
+        download(null, -1);
+    }//GEN-LAST:event_downloadButtonMouseClicked
+
+    private void fileListFileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileListFileMouseClicked
+        if(evt.getClickCount() == 2) {
+            getSelectedFile();
+        }
+    }//GEN-LAST:event_fileListFileMouseClicked
+
+    private void manageButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_manageButtonMouseClicked
+        getSelectedFile();
+    }//GEN-LAST:event_manageButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -593,55 +750,56 @@ public class TestGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ChangeUserButton;
     private javax.swing.JMenuItem ChangeUserItem;
     private javax.swing.JMenu EditMenu;
     private javax.swing.JMenu FileMenu;
     private javax.swing.JPanel FilePanel;
     private javax.swing.JPanel FriendsPanel;
     private javax.swing.JPanel HomePanel;
-    private javax.swing.JButton LogoutButton;
     private javax.swing.JMenuItem LogoutItem;
     private javax.swing.JMenuBar MenuBar;
     private javax.swing.JTabbedPane NavTabs;
     private javax.swing.JPanel ProfilePanel;
     private javax.swing.JMenuItem UploadItem;
-    private javax.swing.JLabel WelcomeMessage;
+    private javax.swing.JButton addFriendButton;
+    private javax.swing.JButton changePasswordButton;
+    private javax.swing.JButton changeUserButton;
+    private javax.swing.JButton downloadButton;
+    private javax.swing.JLabel email;
+    private javax.swing.JTextField emailField;
+    private javax.swing.JList fileListFile;
+    private javax.swing.JPanel fileRecovery;
+    private javax.swing.JLabel firstName;
+    private javax.swing.JTextField firstNameField;
     private javax.swing.JList friendsListFriends;
     private javax.swing.JList friendsListHome;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JList jList2;
+    private javax.swing.JLabel gender;
+    private javax.swing.JTextField genderField;
+    private javax.swing.JPanel generalFileFunctionality;
+    private javax.swing.JPanel generalFriendFunctionality;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JLabel lastName;
+    private javax.swing.JTextField lastNameField;
+    private javax.swing.JButton logoutButton;
+    private javax.swing.JButton manageButton;
+    private javax.swing.JPanel profileSettings;
+    private javax.swing.JLabel profileWelcomeMessage;
+    private javax.swing.JLabel questionLabel;
+    private javax.swing.JButton quickUploadButton;
+    private javax.swing.JButton recoverButton;
+    private javax.swing.JButton removeFriendButton;
+    private javax.swing.JButton updateInfoButton;
+    private javax.swing.JButton uploadButton;
+    private javax.swing.JButton versionControlButton;
+    private javax.swing.JButton viewProfileButton;
+    private javax.swing.JLabel welcomeMessage;
     // End of variables declaration//GEN-END:variables
 }

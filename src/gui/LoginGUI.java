@@ -169,6 +169,7 @@ public class LoginGUI extends javax.swing.JFrame {
         getContentPane().add(jPanel2, gridBagConstraints);
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
