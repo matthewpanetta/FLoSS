@@ -17,8 +17,10 @@ import javax.swing.JOptionPane;
  */
 public class RecoverFileGUI extends javax.swing.JFrame {
     private ServerAdapter serverAdapt;
+    private TestGUI testGUI;
     private String userName;
-    private List<File> files;
+    private List<File> deletedFiles;
+    private List<File> fileList;
     private String[] fileNames;
     /**
      * Creates new form RecoverFileGUI
@@ -28,24 +30,50 @@ public class RecoverFileGUI extends javax.swing.JFrame {
         initComponents();
     }
     
+    public void setControlledGUI(TestGUI testGUI) {
+        this.testGUI = testGUI;
+    }
+    
+    public void setFileList(List<File> fileList) {
+        this.fileList = fileList;
+    }
+    
     public void setUserName(String userName) {
         this.userName = userName;
     }
     
     public void refreshFileList() {
-        files = serverAdapt.getDeletedFileList(userName);
-        fileNames = new String[files.size()];
+        deletedFiles = serverAdapt.getDeletedFileList(userName);
+        fileNames = new String[deletedFiles.size()];
         
-        for(int i = 0; i < files.size(); i++) {
-            fileNames[i] = files.get(i).getFileName();
+        for(int i = 0; i < deletedFiles.size(); i++) {
+            fileNames[i] = deletedFiles.get(i).getFileName();
         }
         
-        fileModel.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = fileNames;
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(fileModel);
+        fileModel.setListData(fileNames);
+    }
+    
+    public void recover() {
+        List<String> fileName = fileModel.getSelectedValuesList();
+        File file = null;
+        
+        for(int j = 0; j < deletedFiles.size(); j++) {
+            if(deletedFiles.get(j).getFileName().equals(fileName.get(0))) {
+                file = deletedFiles.get(j);
+                break;
+            }
+        }
+        
+        boolean recovered = serverAdapt.recoverFile(file);
+
+        if(recovered) {
+            JOptionPane.showMessageDialog(this, "File recovered successfully!");
+            fileList.add(file);
+            testGUI.setFileList(fileList);
+            testGUI.refreshFileList();
+        } else {
+            JOptionPane.showMessageDialog(this, "File could not be recovered. Please try again.");
+        }
     }
 
     /**
@@ -57,35 +85,28 @@ public class RecoverFileGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        fileModel = new javax.swing.JList();
+        jPanel1 = new javax.swing.JPanel();
         recoverButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        fileModel = new javax.swing.JList();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
-        jLabel1.setText("Recover Files");
-
-        fileModel.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(fileModel);
-
+        recoverButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         recoverButton.setText("Recover");
         recoverButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 recoverButtonMouseClicked(evt);
             }
         });
-        recoverButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recoverButtonActionPerformed(evt);
-            }
-        });
 
+        cancelButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cancelButton.setText("Cancel");
         cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -93,67 +114,111 @@ public class RecoverFileGUI extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(recoverButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+                    .addComponent(recoverButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Recoverable Files"));
+
+        fileModel.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        fileModel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fileModelMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(fileModel);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 180, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+        );
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel1.setText("Recover Files");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(143, 143, 143)
+                .addComponent(jLabel1)
+                .addContainerGap(110, Short.MAX_VALUE))
+            .addComponent(jSeparator1)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(recoverButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
-                        .addComponent(cancelButton)))
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(recoverButton)
-                    .addComponent(cancelButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void recoverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recoverButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_recoverButtonActionPerformed
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseClicked
         this.dispose();
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void recoverButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_recoverButtonMouseClicked
-        List<String> fileName = fileModel.getSelectedValuesList();
-        File file;
-        
-        for(int i = 0; i < fileName.size(); i++) {
-            for(int j = 0; j < files.size(); j++) {
-                if(files.get(j).getFileName().equals(fileName.get(i))) {
-                    file = files.get(j);
-                    boolean recovered = serverAdapt.recoverFile(file);
-                    
-                    if(recovered) {
-                        JOptionPane.showMessageDialog(this, "File recovered successfully!");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "File could not be recovered. Please try again.");
-                    }
-                }
-            }
-        }
+        recover();
     }//GEN-LAST:event_recoverButtonMouseClicked
+
+    private void fileModelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileModelMouseClicked
+        if(evt.getClickCount() == 2) {
+            recover();
+        }
+    }//GEN-LAST:event_fileModelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -194,7 +259,11 @@ public class RecoverFileGUI extends javax.swing.JFrame {
     private javax.swing.JButton cancelButton;
     private javax.swing.JList fileModel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton recoverButton;
     // End of variables declaration//GEN-END:variables
 }

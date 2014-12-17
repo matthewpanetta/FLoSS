@@ -99,7 +99,7 @@ public class LoginGUI extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 30, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 9, 0);
         getContentPane().add(jPanel3, gridBagConstraints);
 
         jLabel1.setText("Username:");
@@ -131,7 +131,6 @@ public class LoginGUI extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))

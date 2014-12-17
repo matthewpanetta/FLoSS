@@ -110,6 +110,7 @@ public class AddPermissionGUI extends javax.swing.JFrame {
         friendsModel = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setText("Add Permissions");

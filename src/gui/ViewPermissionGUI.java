@@ -99,6 +99,7 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
         friendsModel = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         addPermButton.setText("Add Permission");
         addPermButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -119,7 +120,7 @@ public class ViewPermissionGUI extends javax.swing.JFrame {
             }
         });
 
-        goBackButton.setText("Go Back");
+        goBackButton.setText("Cancel");
         goBackButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 goBackButtonMouseClicked(evt);
