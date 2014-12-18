@@ -183,6 +183,7 @@ public class FileManagementGUIProto extends javax.swing.JFrame {
         permissionsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         fileNameLabel.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         fileNameLabel.setText("[filename]");

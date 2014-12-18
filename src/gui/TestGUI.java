@@ -210,6 +210,8 @@ public class TestGUI extends javax.swing.JFrame {
         List<String>selectedFileName = fileListFile.getSelectedValuesList();
         File selectedFile = null;
         
+        
+        
         if(selectedFileName.size() > 0) {
             for(File f : fileList) {
                 if(f.getFileName().equals(selectedFileName.get(0))) {
@@ -217,15 +219,19 @@ public class TestGUI extends javax.swing.JFrame {
                     break;
                 }
             }
-
-            VersionControlGUI vcg = new VersionControlGUI();
-            vcg.setUser(user);
-            vcg.setControlledGUI(this);
-            vcg.setFile(selectedFile);
-            vcg.setFileList(fileList);
-            vcg.refreshList();
-            vcg.setVisible(true);
-        } else {
+            
+            if(selectedFile.getOwner().equals(user.getUserName())){
+                VersionControlGUI vcg = new VersionControlGUI();
+                vcg.setUser(user);
+                vcg.setControlledGUI(this);
+                vcg.setFile(selectedFile);
+                vcg.setFileList(fileList);
+                vcg.refreshList();
+                vcg.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "You must be the owner of the file to use rollback.");
+            }
+        }else {
             JOptionPane.showMessageDialog(this, "You must select a file from the list before accessing the version control.");
         }
     }
@@ -262,20 +268,25 @@ public class TestGUI extends javax.swing.JFrame {
         List<String> friendUserNames = friendsListFriends.getSelectedValuesList();
         User friend = null;
         
-        for(String friendName : friendUserNames) {
-            for(User u : friendsList) {
-                if(u.getUserName().equals(friendName)) {
-                    friend = u;
+        if (friendUserNames.size() > 0){
+            for(String friendName : friendUserNames) {
+                for(User u : friendsList) {
+                    if(u.getUserName().equals(friendName)) {
+                        friend = u;
+                    }
+                }
+
+                if(serverAdapt.removeFriend(user, friend)) {
+                    JOptionPane.showMessageDialog(this, "Friend removed successfully.");
+                    friendsList.remove(friend);
+                    refreshFriendsListTab();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Friend not removed. Please try again.");
                 }
             }
-
-            if(serverAdapt.removeFriend(user, friend)) {
-                JOptionPane.showMessageDialog(this, "Friend removed successfully.");
-                friendsList.remove(friend);
-                refreshFriendsListTab();
-            } else {
-                JOptionPane.showMessageDialog(this, "Friend not removed. Please try again.");
-            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "You must select a friend from the list before you can remove them.");
         }
     }
     
@@ -289,15 +300,15 @@ public class TestGUI extends javax.swing.JFrame {
         }
         User friend = null;
         
-        if(selectedFriend != null) {
-            if(selectedFriend.size() > 0) {
-                friend = serverAdapt.getUser(selectedFriend.get(0));
-            }
-
+        if(selectedFriend.size() > 0) {
+            friend = serverAdapt.getUser(selectedFriend.get(0));
             ViewProfileGUI viewProfileGUI = new ViewProfileGUI();
             viewProfileGUI.setUser(friend);
             viewProfileGUI.refreshFields();
             viewProfileGUI.setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "You must select a friend from the list before viewing a profile.");
         }
     }
     
@@ -340,14 +351,27 @@ public class TestGUI extends javax.swing.JFrame {
         user.setFirstName(firstNameField.getText());
         user.setLastName(lastNameField.getText());
         user.setEmail(emailField.getText());
-        user.setGender(genderField.getText().substring(0,1).toUpperCase());
+        //user.setGender(genderField.getText().substring(0,1).toUpperCase());
+        
+        String gender = String.valueOf(genderDropdown.getSelectedItem());
+        
+        if(gender.equals("Male")){gender = "M";}
+        else if(gender.equals("Female")){gender = "F";}
+        else{gender = "?";}
+        
+        user.setGender(gender);
         
         serverAdapt.updateUser(user);
         
         JOptionPane.showMessageDialog(this, "Profile Updated!");
         firstNameField.setText(user.getFirstName());
         lastNameField.setText(user.getLastName());
-        genderField.setText(user.getGender());
+        //genderField.setText(user.getGender());
+        
+        if(user.getGender().equals("M")) {genderDropdown.setSelectedIndex(0);}
+        else if (user.getGender().equals("F")) {genderDropdown.setSelectedIndex(1);}
+        else {genderDropdown.setSelectedIndex(2);}
+        
         emailField.setText(user.getEmail());
     }
     
@@ -431,7 +455,6 @@ public class TestGUI extends javax.swing.JFrame {
         email = new javax.swing.JLabel();
         firstNameField = new javax.swing.JTextField();
         lastNameField = new javax.swing.JTextField();
-        genderField = new javax.swing.JTextField();
         emailField = new javax.swing.JTextField();
         numFilesLabel = new javax.swing.JLabel();
         numFriendsLabel = new javax.swing.JLabel();
@@ -440,6 +463,7 @@ public class TestGUI extends javax.swing.JFrame {
         numFilesField = new javax.swing.JLabel();
         numFriendsField = new javax.swing.JLabel();
         numUpdatesField = new javax.swing.JLabel();
+        genderDropdown = new javax.swing.JComboBox();
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -456,6 +480,14 @@ public class TestGUI extends javax.swing.JFrame {
         setTitle("My FLOSS");
         setMinimumSize(new java.awt.Dimension(500, 400));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         NavTabs.setTabPlacement(javax.swing.JTabbedPane.RIGHT);
         NavTabs.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -467,17 +499,15 @@ public class TestGUI extends javax.swing.JFrame {
         HomePanel.setPreferredSize(new java.awt.Dimension(0, 0));
 
         welcomeMessage.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        welcomeMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         welcomeMessage.setText("Welcome, Eugene Nitka!");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator9)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(74, 74, 74)
-                .addComponent(welcomeMessage)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jSeparator9, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+            .addComponent(welcomeMessage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -628,6 +658,11 @@ public class TestGUI extends javax.swing.JFrame {
         manageButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 manageButtonMouseClicked(evt);
+            }
+        });
+        manageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manageButtonActionPerformed(evt);
             }
         });
 
@@ -882,6 +917,11 @@ public class TestGUI extends javax.swing.JFrame {
                 updateInfoButtonMouseClicked(evt);
             }
         });
+        updateInfoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateInfoButtonActionPerformed(evt);
+            }
+        });
 
         deleteAccountButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         deleteAccountButton.setText("Delete Account");
@@ -901,7 +941,7 @@ public class TestGUI extends javax.swing.JFrame {
                 .addComponent(updateInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
                 .addComponent(deleteAccountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 1, Short.MAX_VALUE))
         );
         profileSettingsLayout.setVerticalGroup(
             profileSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -949,8 +989,6 @@ public class TestGUI extends javax.swing.JFrame {
 
         lastNameField.setText("[last name]");
 
-        genderField.setText("[gender]");
-
         emailField.setText("[email]");
 
         numFilesLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -971,6 +1009,13 @@ public class TestGUI extends javax.swing.JFrame {
         numUpdatesField.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         numUpdatesField.setText("[#]");
 
+        genderDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Male", "Female", "Non-binary" }));
+        genderDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                genderDropdownActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
@@ -981,7 +1026,7 @@ public class TestGUI extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(firstName)
                         .addGap(18, 18, 18)
-                        .addComponent(firstNameField))
+                        .addComponent(firstNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lastName)
@@ -989,9 +1034,9 @@ public class TestGUI extends javax.swing.JFrame {
                             .addComponent(email))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(genderField)
                             .addComponent(lastNameField)
-                            .addComponent(emailField))))
+                            .addComponent(emailField)
+                            .addComponent(genderDropdown, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(90, 90, 90))
             .addComponent(jSeparator8)
             .addGroup(jPanel7Layout.createSequentialGroup()
@@ -1033,13 +1078,13 @@ public class TestGUI extends javax.swing.JFrame {
                     .addComponent(lastName)
                     .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(gender)
-                    .addComponent(genderField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(email)
                     .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(gender)
+                    .addComponent(genderDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(52, Short.MAX_VALUE))
         );
 
@@ -1138,7 +1183,12 @@ public class TestGUI extends javax.swing.JFrame {
             
             firstNameField.setText(user.getFirstName());
             lastNameField.setText(user.getLastName());
-            genderField.setText(user.getGender());
+            //genderField.setText(user.getGender());
+            
+            if(user.getGender().equals("M")) {genderDropdown.setSelectedIndex(0);}
+            else if (user.getGender().equals("F")) {genderDropdown.setSelectedIndex(1);}
+            else {genderDropdown.setSelectedIndex(2);}
+            
             emailField.setText(user.getEmail());
         }
     }//GEN-LAST:event_NavTabsStateChanged
@@ -1209,6 +1259,27 @@ public class TestGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_friendsListHomeMouseClicked
 
+    private void genderDropdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genderDropdownActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_genderDropdownActionPerformed
+
+    private void updateInfoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateInfoButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_updateInfoButtonActionPerformed
+
+    private void manageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_manageButtonActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        serverAdapt.deauthenticate(user);
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */
@@ -1259,7 +1330,7 @@ public class TestGUI extends javax.swing.JFrame {
     private javax.swing.JList friendsListFriends;
     private javax.swing.JList friendsListHome;
     private javax.swing.JLabel gender;
-    private javax.swing.JTextField genderField;
+    private javax.swing.JComboBox genderDropdown;
     private javax.swing.JPanel generalFileFunctionality;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

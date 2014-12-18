@@ -228,6 +228,7 @@ public class LoginGUI extends javax.swing.JFrame {
     private void regButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_regButtonMouseClicked
         RegisterGUI registerGUI = new RegisterGUI();
         registerGUI.setVisible(true);
+        dispose();
     }//GEN-LAST:event_regButtonMouseClicked
     public void logIn() {        
         String username = usernameField.getText();
